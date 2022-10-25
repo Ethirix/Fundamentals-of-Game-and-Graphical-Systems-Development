@@ -25,6 +25,8 @@ public:
 	void Update(int elapsedTime) override;
 	void Draw(int elapsedTime) override;
 
+	vector<string*> GameObjects;
+
 private:
 	Player _player = Player(0.1f, new Rect(0.0f, 0.0f, 32, 32), new Vector2(30.0f, 30.0f));
 };
