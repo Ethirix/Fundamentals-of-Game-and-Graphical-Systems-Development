@@ -1,33 +1,33 @@
 #pragma once
 
+#include <map>
+
+#include "Animation.h"
+#include "GameObject.h"
 #include "S2D/S2D.h"
 using namespace S2D;
 
 enum Direction
 {
-	UP = 3,
-	DOWN = 1,
-	LEFT = 2,
-	RIGHT = 0
+	Up = 3,
+	Down = 1,
+	Left = 2,
+	Right = 0
 };
 
-class Player
+class Player : public GameObject
 {
 public:
-	Player(float speed, Rect* srcRect, Texture2D* texture);
-	~Player();
-	
-	Texture2D* GetTexture();
-	Rect* GetSourceRect();
-	float GetMovementSpeed();
+	Player(float speed, Rect* srcRect, Vector2* position);
+	~Player() override;
 
-	void RunMovement(Input::KeyboardState* keyboardState, float elapsedTime);
-
-	Vector2* Position;
-	
+	void Update(int elapsedTime) override;
+	float MovementSpeed = 0;
 
 private:
-	Texture2D* _texture;
-	Rect* _sourceRect;
-	float _movementSpeed;
+	Input::Keys _currentInput = Input::Keys::D;
+	Input::Keys _lastInput = Input::Keys::RIGHTCONTROL;
+	int _frame = 0;
+
+	map<Direction, Animation> _animations;
 };
