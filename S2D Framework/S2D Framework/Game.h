@@ -23,6 +23,8 @@ public:
 	void virtual Update(int elapsedTime);
 	void virtual Draw(int elapsedTime);
 
+	vector<string*> GameObjects;
+
 private:
 	Player _player;
 };
