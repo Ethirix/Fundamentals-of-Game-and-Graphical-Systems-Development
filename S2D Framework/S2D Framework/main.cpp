@@ -2,5 +2,7 @@
 
 //Entry Point for Application
 int main(int argc, char* argv[]) {
-	Game* game = new Game(argc, argv);
+	TheGame* game = new TheGame(argc, argv);
+
+	return EXIT_SUCCESS;
 }

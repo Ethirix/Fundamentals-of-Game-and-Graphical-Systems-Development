@@ -1,39 +1,34 @@
-#pragma once
 #include "Player.h"
-using namespace S2D;
 
-Player::Player(float speed, Rect* srcRect, Texture2D* texture)
+Player::Player(float speed, Rect* srcRect, Vector2* position)
 {
-	_movementSpeed = speed;
-	_sourceRect = srcRect;
-	_texture = texture;
+	MovementSpeed = speed;
+	SourceRect = srcRect;
+	Texture = new Texture2D();
+	Position = position;
+
+	_animations[Down] = Animation(15, 2, Vector2(0, 32), Vector2(32, 32));
+	_animations[Up] = Animation(15, 2, Vector2(0, 96), Vector2(32, 32));
+	_animations[Left] = Animation(15, 2, Vector2(0, 64), Vector2(32, 32));
+	_animations[Right] = Animation(15, 2, Vector2(0, 0), Vector2(32, 32));
 }
 
 Player::~Player()
 {
 	delete Position;
-	delete _texture;
-	delete _sourceRect;
-	delete _movementSpeed;
+	delete Texture;
+	delete SourceRect;
 }
 
-Texture2D* Player::GetTexture()
+void Player::Update(int elapsedTime)
 {
-	return _texture;
-}
+	Input::KeyboardState* keyboardState = Input::Keyboard::GetState();
 
-Rect* Player::GetSourceRect()
-{
-	return _sourceRect;
-}
+	for (auto& anim : _animations)
+	{
+		anim.second.Update();
+	}
 
-float* Player::GetMovementSpeed()
-{
-	return _movementSpeed;
-}
-
-void Player::RunMovement(Input::KeyboardState* keyboardState, float elapsedTime)
-{
 	if (keyboardState->IsKeyDown(Input::Keys::W))
 	{
 		_lastInput = Input::Keys::W;
@@ -58,16 +53,16 @@ void Player::RunMovement(Input::KeyboardState* keyboardState, float elapsedTime)
 	switch (_currentInput)
 	{
 	case Input::Keys::A:
-		Position->X -= _movementSpeed * elapsedTime;
+		Position->X -= MovementSpeed * elapsedTime;
 		break;
 	case Input::Keys::W:
-		Position->Y -= _movementSpeed * elapsedTime;
+		Position->Y -= MovementSpeed * elapsedTime;
 		break;
 	case Input::Keys::S:
-		Position->Y += _movementSpeed * elapsedTime;
+		Position->Y += MovementSpeed * elapsedTime;
 		break;
 	case Input::Keys::D:
-		Position->X += _movementSpeed * elapsedTime;
+		Position->X += MovementSpeed * elapsedTime;
 		break;
 	default:
 		break;
@@ -75,44 +70,42 @@ void Player::RunMovement(Input::KeyboardState* keyboardState, float elapsedTime)
 
 	_currentInput = Input::Keys::RIGHTCONTROL;
 
-	Direction currentDirection = RIGHT;
+	Direction currentDirection = Right;
 
 	switch (_lastInput)
 	{
 	case Input::Keys::A:
-		currentDirection = Direction::LEFT;
+		currentDirection = Left;
 		break;
 	case Input::Keys::W:
-		currentDirection = Direction::UP;
+		currentDirection = Up;
 		break;
 	case Input::Keys::S:
-		currentDirection = Direction::DOWN;
+		currentDirection = Down;
 		break;
 	case Input::Keys::D:
-		currentDirection = Direction::RIGHT;
-		break;
 	default:
-		currentDirection = RIGHT;
+		currentDirection = Right;
 		break;
 	}
+	
+	SourceRect = _animations[currentDirection].SourceRect;
 
-	_sourceRect = new Rect(32.0f * _frame, 32.0f * currentDirection, 32, 32);
-
-	if (Position->X + _sourceRect->Width > Graphics::GetViewportWidth())
-	{
-		Position->X = Graphics::GetViewportWidth() - _sourceRect->Width;
-	}
-	if (Position->X < 0)
+	if (Position->X + SourceRect->Width > Graphics::GetViewportWidth())
 	{
 		Position->X = 0;
 	}
-
-	if (Position->Y + _sourceRect->Height > Graphics::GetViewportHeight())
+	if (Position->X < 0)
 	{
-		Position->Y = Graphics::GetViewportHeight() - _sourceRect->Height;
+		Position->X = Graphics::GetViewportWidth() - SourceRect->Width;
+	}
+
+	if (Position->Y + SourceRect->Height > Graphics::GetViewportHeight())
+	{
+		Position->Y = 0;
 	}
 	if (Position->Y < 0)
 	{
-		Position->Y = 0;
+		Position->Y = Graphics::GetViewportHeight() - SourceRect->Height;
 	}
 }
