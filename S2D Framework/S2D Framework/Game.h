@@ -9,14 +9,12 @@
 #endif
 
 #include "S2D/S2D.h"
-#include "GameObject.h"
 #include "Player.h"
 
 using namespace S2D;
 
 class TheGame : public Game
 {
-
 public:
 	TheGame(int argc, char* argv[]);
 	virtual ~TheGame();
@@ -25,8 +23,6 @@ public:
 	void Update(int elapsedTime) override;
 	void Draw(int elapsedTime) override;
 
-	vector<string*> GameObjects;
-
 private:
-	Player _player = Player(0.1f, new Rect(0.0f, 0.0f, 32, 32), new Vector2(30.0f, 30.0f));
+	Player _player = Player(0.1f, new Rect(0.0f, 0.0f, 32, 32), new Vector2(100.0f, 100.0f));
 };
