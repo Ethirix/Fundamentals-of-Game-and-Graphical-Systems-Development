@@ -4,7 +4,6 @@ Player::Player(float speed, Rect* srcRect, Vector2* position)
 {
 	MovementSpeed = speed;
 	SourceRect = srcRect;
-	Texture = new Texture2D();
 	Position = position;
 
 	_animations[Down] = Animation(15, 2, Vector2(0, 32), Vector2(32, 32));
@@ -24,11 +23,14 @@ void Player::Update(int elapsedTime)
 {
 	Input::KeyboardState* keyboardState = Input::Keyboard::GetState();
 
+#pragma region UpdateAnimations
 	for (auto& anim : _animations)
 	{
 		anim.second.Update();
 	}
+#pragma endregion
 
+#pragma region GetInput
 	if (keyboardState->IsKeyDown(Input::Keys::W))
 	{
 		_lastInput = Input::Keys::W;
@@ -49,7 +51,9 @@ void Player::Update(int elapsedTime)
 		_lastInput = Input::Keys::D;
 		_currentInput = Input::Keys::D;
 	}
+#pragma endregion
 
+#pragma region Movement
 	switch (_currentInput)
 	{
 	case Input::Keys::A:
@@ -69,9 +73,10 @@ void Player::Update(int elapsedTime)
 	}
 
 	_currentInput = Input::Keys::RIGHTCONTROL;
+#pragma endregion
 
+#pragma region Animation
 	Direction currentDirection = Right;
-
 	switch (_lastInput)
 	{
 	case Input::Keys::A:
@@ -90,7 +95,9 @@ void Player::Update(int elapsedTime)
 	}
 	
 	SourceRect = _animations[currentDirection].SourceRect;
+#pragma endregion
 
+#pragma region ScreenWrap
 	if (Position->X + SourceRect->Width > Graphics::GetViewportWidth())
 	{
 		Position->X = 0;
@@ -108,4 +115,5 @@ void Player::Update(int elapsedTime)
 	{
 		Position->Y = Graphics::GetViewportHeight() - SourceRect->Height;
 	}
+#pragma endregion
 }

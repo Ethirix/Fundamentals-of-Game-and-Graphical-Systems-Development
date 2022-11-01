@@ -10,6 +10,7 @@
 
 #include "S2D/S2D.h"
 #include "Player.h"
+#include "PauseScreen.h"
 
 using namespace S2D;
 
@@ -23,6 +24,14 @@ public:
 	void Update(int elapsedTime) override;
 	void Draw(int elapsedTime) override;
 
+	bool IsGamePaused = false;
 private:
 	Player _player = Player(0.1f, new Rect(0.0f, 0.0f, 32, 32), new Vector2(100.0f, 100.0f));
+	PauseScreen _pause = PauseScreen(new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportHeight()), "PAUSED");
+
+
+	Input::Keys _pauseKey = Input::Keys::ESCAPE;
+	bool _isPauseKeyDown = false;
+
+	void DrawString(string str, Vector2 position, const Color* color);
 };
