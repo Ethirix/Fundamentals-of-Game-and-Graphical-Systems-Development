@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "S2D/S2D.h"
 #include "Direction.cpp"
+
 using namespace S2D;
 
 class Player : public GameObject
