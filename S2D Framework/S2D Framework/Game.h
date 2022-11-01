@@ -13,7 +13,7 @@
 
 using namespace S2D;
 
-class TheGame : public Game
+class TheGame : public Game 
 {
 public:
 	TheGame(int argc, char* argv[]);

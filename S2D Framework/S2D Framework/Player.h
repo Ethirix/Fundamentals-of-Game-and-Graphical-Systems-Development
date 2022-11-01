@@ -5,15 +5,8 @@
 #include "Animation.h"
 #include "GameObject.h"
 #include "S2D/S2D.h"
+#include "Direction.cpp"
 using namespace S2D;
-
-enum Direction
-{
-	Up = 3,
-	Down = 1,
-	Left = 2,
-	Right = 0
-};
 
 class Player : public GameObject
 {

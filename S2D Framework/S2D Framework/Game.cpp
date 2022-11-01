@@ -26,10 +26,10 @@ void TheGame::Draw(int elapsedTime)
 	stream << "Player X: " << _player.Position->X << " Y: " << _player.Position->Y;
 
 	SpriteBatch::BeginDraw();
+
 	SpriteBatch::Draw(_player.Texture, _player.Position, _player.SourceRect);
-
-
-
+	
 	SpriteBatch::DrawString(stream.str().c_str(), new Vector2(10.0f, 25.0f), Color::Green);
+	
 	SpriteBatch::EndDraw();
 }
