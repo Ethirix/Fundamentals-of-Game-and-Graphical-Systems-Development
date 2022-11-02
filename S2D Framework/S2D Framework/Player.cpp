@@ -6,10 +6,10 @@ Player::Player(float speed, Rect* srcRect, Vector2* position)
 	SourceRect = srcRect;
 	Position = position;
 
-	_animations[Down] = Animation(15, 2, Vector2(0, 32), Vector2(32, 32));
-	_animations[Up] = Animation(15, 2, Vector2(0, 96), Vector2(32, 32));
-	_animations[Left] = Animation(15, 2, Vector2(0, 64), Vector2(32, 32));
-	_animations[Right] = Animation(15, 2, Vector2(0, 0), Vector2(32, 32));
+	_animations[Down] = Animation(250, 2, Vector2(0, 32), Vector2(32, 32));
+	_animations[Up] = Animation(250, 2, Vector2(0, 96), Vector2(32, 32));
+	_animations[Left] = Animation(250, 2, Vector2(0, 64), Vector2(32, 32));
+	_animations[Right] = Animation(250, 2, Vector2(0, 0), Vector2(32, 32));
 }
 
 Player::~Player()
@@ -26,7 +26,7 @@ void Player::Update(int elapsedTime)
 #pragma region UpdateAnimations
 	for (auto& anim : _animations)
 	{
-		anim.second.Update();
+		anim.second.Update(elapsedTime);
 	}
 #pragma endregion
 
