@@ -1,4 +1,4 @@
-enum Direction
+enum class Direction
 {
 	Up = 3,
 	Down = 1,
