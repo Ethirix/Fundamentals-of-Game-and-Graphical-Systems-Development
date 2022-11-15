@@ -6,10 +6,10 @@ Player::Player(float speed, Rect* srcRect, Vector2* position)
 	SourceRect = srcRect;
 	Position = position;
 
-	_animations[Down] = Animation(250, 2, Vector2(0, 32), Vector2(32, 32));
-	_animations[Up] = Animation(250, 2, Vector2(0, 96), Vector2(32, 32));
-	_animations[Left] = Animation(250, 2, Vector2(0, 64), Vector2(32, 32));
-	_animations[Right] = Animation(250, 2, Vector2(0, 0), Vector2(32, 32));
+	_animations[Direction::Down] = Animation(250, 2, Vector2(0, 32), Vector2(32, 32));
+	_animations[Direction::Up] = Animation(250, 2, Vector2(0, 96), Vector2(32, 32));
+	_animations[Direction::Left] = Animation(250, 2, Vector2(0, 64), Vector2(32, 32));
+	_animations[Direction::Right] = Animation(250, 2, Vector2(0, 0), Vector2(32, 32));
 }
 
 Player::~Player()
@@ -76,21 +76,21 @@ void Player::Update(int elapsedTime)
 #pragma endregion
 
 #pragma region Animation
-	Direction currentDirection = Right;
+	Direction currentDirection = Direction::Right;
 	switch (_lastInput)
 	{
 	case Input::Keys::A:
-		currentDirection = Left;
+		currentDirection = Direction::Left;
 		break;
 	case Input::Keys::W:
-		currentDirection = Up;
+		currentDirection = Direction::Up;
 		break;
 	case Input::Keys::S:
-		currentDirection = Down;
+		currentDirection = Direction::Down;
 		break;
 	case Input::Keys::D:
 	default:
-		currentDirection = Right;
+		currentDirection = Direction::Right;
 		break;
 	}
 	
