@@ -6,10 +6,11 @@
 #include "GameObject.h"
 #include "S2D/S2D.h"
 #include "Direction.cpp"
+#include "Collidable.h"
 
 using namespace S2D;
 
-class Player : public GameObject
+class Player : public GameObject, public Collidable
 {
 public:
 	Player(float speed, Rect* srcRect, Vector2* position);
