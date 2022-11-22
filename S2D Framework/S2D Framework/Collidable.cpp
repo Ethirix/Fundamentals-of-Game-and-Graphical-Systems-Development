@@ -20,8 +20,14 @@ bool Collidable::IsCollided(GameObject* objectToCheck)
 	return true;
 }
 
-
 bool Collidable::IsTrigger()
 {
-	return isTrigger;
+	return _isTrigger;
 }
+
+GameObject* Collidable::GetSelf()
+{
+	return _self;
+}
+
+void Collidable::OnCollision(GameObject* collidedObject) {}
