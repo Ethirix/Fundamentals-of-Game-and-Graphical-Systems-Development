@@ -1,37 +1,20 @@
 #include "Collidable.h"
 
-Collidable::Collidable(GameObject& selfObject) : self(selfObject), isTrigger(false) {}
-Collidable::Collidable(GameObject& selfObject, bool isATrigger) : self(selfObject), isTrigger(isATrigger) {}
-
-bool Collidable::IsCollided(GameObject& objectToCheck)
-{
-	if (self.Position->Y + self.SourceRect->Height < objectToCheck.Position->Y)
-		return false;
-
-	if (self.Position->Y > objectToCheck.Position->Y + objectToCheck.SourceRect->Height)
-		return false;
-
-	if (self.SourceRect->Right() < objectToCheck.SourceRect->Left())
-		return false;
-
-	if (self.SourceRect->Left() > objectToCheck.SourceRect->Right())
-		return false;
-
-	return true;
-}
+Collidable::Collidable(GameObject* selfObject) : isTrigger(false), self(selfObject) {}
+Collidable::Collidable(GameObject* selfObject, bool isATrigger) : isTrigger(isATrigger), self(selfObject) {}
 
 bool Collidable::IsCollided(GameObject* objectToCheck)
 {
-	if (self.SourceRect->Bottom() < objectToCheck->SourceRect->Top())
+	if (self->Position->Y + static_cast<float>(self->SourceRect->Height) < objectToCheck->Position->Y)
 		return false;
 
-	if (self.SourceRect->Top() > objectToCheck->SourceRect->Bottom())
+	if (self->Position->Y > objectToCheck->Position->Y + static_cast<float>(objectToCheck->SourceRect->Height))
 		return false;
 
-	if (self.SourceRect->Right() < objectToCheck->SourceRect->Left())
+	if (self->Position->X + static_cast<float>(self->SourceRect->Width) < objectToCheck->Position->X)
 		return false;
 
-	if (self.SourceRect->Left() > objectToCheck->SourceRect->Right())
+	if (self->Position->X > objectToCheck->Position->X + static_cast<float>(objectToCheck->SourceRect->Width))
 		return false;
 
 	return true;

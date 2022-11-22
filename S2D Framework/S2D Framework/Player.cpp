@@ -2,7 +2,7 @@
 #include "GameManager.h"
 
 Player::Player(float speed, Rect* srcRect, Vector2* position) 
-	: GameObject(), Collidable(*this, false)
+	: GameObject(), Collidable(this, false)
 {
 	MovementSpeed = speed;
 	SourceRect = srcRect;
@@ -78,7 +78,8 @@ void Player::Update(int elapsedTime)
 
 	if (GameManager::GameObjectManager.HasGameObjectCollided(this)) 
 	{
-		Position = &tempPos;
+		Position->X = tempPos.X;
+		Position->Y = tempPos.Y;
 	}
 
 	_currentInput = Input::Keys::RIGHTCONTROL;
