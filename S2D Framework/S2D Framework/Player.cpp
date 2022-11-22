@@ -8,10 +8,10 @@ Player::Player(float speed, Rect* srcRect, Vector2* position)
 	SourceRect = srcRect;
 	Position = position;
 
-	_animations[Direction::Down] = Animation(250, 2, Vector2(0, 32), Vector2(32, 32));
-	_animations[Direction::Up] = Animation(250, 2, Vector2(0, 96), Vector2(32, 32));
-	_animations[Direction::Left] = Animation(250, 2, Vector2(0, 64), Vector2(32, 32));
-	_animations[Direction::Right] = Animation(250, 2, Vector2(0, 0), Vector2(32, 32));
+	_animations[Direction::Down] = new Animation(250, 2, Vector2(0, 32), Vector2(32, 32));
+	_animations[Direction::Up] = new Animation(250, 2, Vector2(0, 96), Vector2(32, 32));
+	_animations[Direction::Left] = new Animation(250, 2, Vector2(0, 64), Vector2(32, 32));
+	_animations[Direction::Right] = new Animation(250, 2, Vector2(0, 0), Vector2(32, 32));
 }
 
 Player::~Player()
@@ -19,6 +19,12 @@ Player::~Player()
 	delete Position;
 	delete Texture;
 	delete SourceRect;
+
+	for (auto& anim : _animations)
+	{
+		delete anim.second;
+	}
+	_animations.clear();
 }
 
 void Player::Update(int elapsedTime)
@@ -28,7 +34,7 @@ void Player::Update(int elapsedTime)
 #pragma region UpdateAnimations
 	for (auto& anim : _animations)
 	{
-		anim.second.Update(elapsedTime);
+		anim.second->Update(elapsedTime);
 	}
 #pragma endregion
 
@@ -76,7 +82,9 @@ void Player::Update(int elapsedTime)
 		break;
 	}
 
-	if (GameManager::GameObjectManager.HasGameObjectCollided(this)) 
+	auto collider = GameManager::GameObjectManager.HasGameObjectCollided(this);
+
+	if (collider && !dynamic_cast<Collidable*>(collider)->IsTrigger()) 
 	{
 		Position->X = tempPos.X;
 		Position->Y = tempPos.Y;
@@ -86,7 +94,7 @@ void Player::Update(int elapsedTime)
 #pragma endregion
 
 #pragma region Animation
-	Direction currentDirection = Direction::Right;
+	auto currentDirection = Direction::Right;
 	switch (_lastInput)
 	{
 	case Input::Keys::A:
@@ -104,7 +112,7 @@ void Player::Update(int elapsedTime)
 		break;
 	}
 	
-	SourceRect = _animations[currentDirection].SourceRect;
+	SourceRect = _animations[currentDirection]->SourceRect;
 #pragma endregion
 
 #pragma region ScreenWrap
@@ -126,4 +134,8 @@ void Player::Update(int elapsedTime)
 		Position->Y = static_cast<float>(Graphics::GetViewportHeight() - SourceRect->Height);
 	}
 #pragma endregion
+}
+
+void Player::OnCollision(GameObject* collidedObject)
+{
 }

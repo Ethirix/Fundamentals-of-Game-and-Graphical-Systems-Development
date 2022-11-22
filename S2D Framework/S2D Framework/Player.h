@@ -17,6 +17,7 @@ public:
 	~Player() override;
 
 	void Update(int elapsedTime) override;
+	void OnCollision(GameObject* collidedObject) override;
 	float MovementSpeed = 0;
 
 private:
@@ -24,5 +25,5 @@ private:
 	Input::Keys _lastInput = Input::Keys::RIGHTCONTROL;
 	int _frame = 0;
 
-	map<Direction, Animation> _animations;
+	map<Direction, Animation*> _animations;
 };

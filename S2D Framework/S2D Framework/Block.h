@@ -11,4 +11,5 @@ public:
     ~Block() override;
 
     void Update(int elapsedTime) override;
+    void OnCollision(GameObject* collidedObject) override;
 };

@@ -31,6 +31,7 @@ void Animation::Update(int elapsedTime)
 			_animationFrame = 0;
 		}
 
-		SourceRect = new S2D::Rect((_rectStartPosition.X + _rectSize.X) * _animationFrame, _rectStartPosition.Y, _rectSize.X, _rectSize.Y);
+		SourceRect = new S2D::Rect((_rectStartPosition.X + _rectSize.X) * static_cast<float>(_animationFrame),
+		                           _rectStartPosition.Y, static_cast<int>(_rectSize.X), static_cast<int>(_rectSize.Y));
 	}
 }
