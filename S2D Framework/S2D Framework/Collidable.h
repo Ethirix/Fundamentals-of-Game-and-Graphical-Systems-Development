@@ -8,10 +8,12 @@ public:
 	Collidable() = default;
 	Collidable(GameObject* selfObject);
 	Collidable(GameObject* selfObject, bool isATrigger);
-	~Collidable() = default;
+	virtual ~Collidable() = default;
 	bool IsCollided(GameObject* objectToCheck);
 	bool IsTrigger();
+	virtual void OnCollision(GameObject* collidedObject);
+	GameObject* GetSelf();
 private:
-	bool isTrigger;
-	GameObject* self;
+	bool _isTrigger = false;
+	GameObject* _self = nullptr;
 };

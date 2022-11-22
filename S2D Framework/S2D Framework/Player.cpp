@@ -108,22 +108,22 @@ void Player::Update(int elapsedTime)
 #pragma endregion
 
 #pragma region ScreenWrap
-	if (Position->X + SourceRect->Width > Graphics::GetViewportWidth())
+	if (Position->X + static_cast<float>(SourceRect->Width) > static_cast<float>(Graphics::GetViewportWidth()))
 	{
 		Position->X = 0;
 	}
 	if (Position->X < 0)
 	{
-		Position->X = Graphics::GetViewportWidth() - SourceRect->Width;
+		Position->X = static_cast<float>(Graphics::GetViewportWidth() - SourceRect->Width);
 	}
 
-	if (Position->Y + SourceRect->Height > Graphics::GetViewportHeight())
+	if (Position->Y + static_cast<float>(SourceRect->Height) > static_cast<float>(Graphics::GetViewportHeight()))
 	{
 		Position->Y = 0;
 	}
 	if (Position->Y < 0)
 	{
-		Position->Y = Graphics::GetViewportHeight() - SourceRect->Height;
+		Position->Y = static_cast<float>(Graphics::GetViewportHeight() - SourceRect->Height);
 	}
 #pragma endregion
 }

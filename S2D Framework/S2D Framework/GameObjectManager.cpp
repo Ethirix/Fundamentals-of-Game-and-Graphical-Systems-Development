@@ -1,5 +1,6 @@
 #include "GameObjectManager.h"
 #include "Collidable.h"
+#include "PauseScreen.h"
 
 GameObjectManager::~GameObjectManager()
 {
@@ -11,11 +12,11 @@ GameObjectManager::~GameObjectManager()
 
 void GameObjectManager::DestroyGameObject(GameObject_P gO)
 {
-	for (GameObject_P gO_P : _gameObjects)
+	for (GameObject_P gOp : _gameObjects)
 	{
-		if (gO_P == gO)
+		if (gOp == gO)
 		{
-			delete gO_P;
+			delete gOp;
 		}
 
 		gO = nullptr;
@@ -60,5 +61,17 @@ void GameObjectManager::UpdateGameObjects(int elapsedTime)
 	for (GameObject_P gO : _gameObjects)
 	{
 		gO->Update(elapsedTime);
+	}
+}
+
+void GameObjectManager::DrawGameObjects()
+{
+	for (GameObject_P gO : _gameObjects)
+	{
+		if (dynamic_cast<PauseScreen*>(gO) != nullptr)
+			continue;
+
+		if (gO)
+			SpriteBatch::Draw(gO->Texture, gO->Position, gO->SourceRect);
 	}
 }

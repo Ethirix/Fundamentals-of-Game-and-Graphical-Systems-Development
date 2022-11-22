@@ -26,10 +26,6 @@ public:
 
 	bool IsGamePaused = false;
 private:
-	Player* _player = new Player(0.1f, new Rect(0.0f, 0.0f, 32, 32), new Vector2(100.0f, 100.0f));
-	PauseScreen* _pause = new PauseScreen(new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportHeight()), "PAUSED");
-
-
 	Input::Keys _pauseKey = Input::Keys::ESCAPE;
 	bool _isPauseKeyDown = false;
 
