@@ -1,20 +1,20 @@
 #include "Collidable.h"
 
-Collidable::Collidable(GameObject* selfObject) : isTrigger(false), self(selfObject) {}
-Collidable::Collidable(GameObject* selfObject, bool isATrigger) : isTrigger(isATrigger), self(selfObject) {}
+Collidable::Collidable(GameObject* selfObject) : _isTrigger(false), _self(selfObject) {}
+Collidable::Collidable(GameObject* selfObject, bool isATrigger) : _isTrigger(isATrigger), _self(selfObject) {}
 
 bool Collidable::IsCollided(GameObject* objectToCheck)
 {
-	if (self->Position->Y + static_cast<float>(self->SourceRect->Height) < objectToCheck->Position->Y)
+	if (_self->Position->Y + static_cast<float>(_self->SourceRect->Height) < objectToCheck->Position->Y)
 		return false;
 
-	if (self->Position->Y > objectToCheck->Position->Y + static_cast<float>(objectToCheck->SourceRect->Height))
+	if (_self->Position->Y > objectToCheck->Position->Y + static_cast<float>(objectToCheck->SourceRect->Height))
 		return false;
 
-	if (self->Position->X + static_cast<float>(self->SourceRect->Width) < objectToCheck->Position->X)
+	if (_self->Position->X + static_cast<float>(_self->SourceRect->Width) < objectToCheck->Position->X)
 		return false;
 
-	if (self->Position->X > objectToCheck->Position->X + static_cast<float>(objectToCheck->SourceRect->Width))
+	if (_self->Position->X > objectToCheck->Position->X + static_cast<float>(objectToCheck->SourceRect->Width))
 		return false;
 
 	return true;
