@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "GameManager.h"
 #include <sstream>
 
 TheGame::TheGame(int argc, char* argv[]) : Game(argc, argv) 
@@ -12,8 +13,11 @@ TheGame::~TheGame() = default;
 
 void TheGame::LoadContent() 
 {
-	_player.Texture->Load("Textures/Pacman.tga", false);
-	_pause.Texture->Load("Textures/Transparency.png", false);
+	GameManager::GameObjectManager.AddGameObject(_player);
+	GameManager::GameObjectManager.AddGameObject(_pause);
+
+	_player->Texture->Load("Textures/Pacman.tga", false);
+	_pause->Texture->Load("Textures/Transparency.png", false);
 }
 
 void TheGame::Update(int elapsedTime)
@@ -35,7 +39,7 @@ void TheGame::Update(int elapsedTime)
 
 	if (!IsGamePaused)
 	{
-		_player.Update(elapsedTime);
+		_player->Update(elapsedTime);
 	}
 }
 
@@ -44,20 +48,20 @@ void TheGame::Draw(int elapsedTime)
 	SpriteBatch::BeginDraw();
 
 #pragma region Draw
-	SpriteBatch::Draw(_player.Texture, _player.Position, _player.SourceRect);
+	SpriteBatch::Draw(_player->Texture, _player->Position, _player->SourceRect);
 	
 	if (IsGamePaused)
 	{
-		SpriteBatch::Draw(_pause.Texture, _pause.SourceRect, nullptr);
+		SpriteBatch::Draw(_pause->Texture, _pause->SourceRect, nullptr);
 	}
 #pragma endregion
 
 #pragma region DrawString
-	DrawString("Player X: " + to_string(_player.Position->X) + " Y: " + to_string(_player.Position->Y), Vector2(10.0f, 25.0f), Color::Green);
+	DrawString("Player X: " + to_string(_player->Position->X) + " Y: " + to_string(_player->Position->Y), Vector2(10.0f, 25.0f), Color::Green);
 	
 	if (IsGamePaused)
 	{
-		DrawString(_pause.PauseText, Vector2(Graphics::GetViewportWidth() / 2.1f, Graphics::GetViewportHeight() / 2.1f), Color::Red);
+		DrawString(_pause->PauseText, Vector2(Graphics::GetViewportWidth() / 2.1f, Graphics::GetViewportHeight() / 2.1f), Color::Red);
 	}
 #pragma endregion
 
