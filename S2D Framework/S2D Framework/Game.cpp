@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "GameManager.h"
 #include <sstream>
+#include "Block.h"
 
 TheGame::TheGame(int argc, char* argv[]) : Game(argc, argv) 
 {
@@ -13,6 +14,10 @@ TheGame::~TheGame() = default;
 
 void TheGame::LoadContent() 
 {
+	Block* block = new Block(new Rect(0.0f, 0.0f, 32, 32), new Vector2(200.0f, 200.0f), false);
+	block->Texture->Load("Textures/Munchie.tga", false);
+	GameManager::GameObjectManager.AddGameObject(block);
+
 	GameManager::GameObjectManager.AddGameObject(_player);
 	GameManager::GameObjectManager.AddGameObject(_pause);
 
@@ -39,7 +44,8 @@ void TheGame::Update(int elapsedTime)
 
 	if (!IsGamePaused)
 	{
-		_player->Update(elapsedTime);
+		//_player->Update(elapsedTime);
+		GameManager::GameObjectManager.UpdateGameObjects(elapsedTime);
 	}
 }
 

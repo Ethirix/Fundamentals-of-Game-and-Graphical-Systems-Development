@@ -1,6 +1,8 @@
 #include "Player.h"
+#include "GameManager.h"
 
-Player::Player(float speed, Rect* srcRect, Vector2* position)
+Player::Player(float speed, Rect* srcRect, Vector2* position) 
+	: GameObject(), Collidable(*this, false)
 {
 	MovementSpeed = speed;
 	SourceRect = srcRect;
@@ -54,6 +56,8 @@ void Player::Update(int elapsedTime)
 #pragma endregion
 
 #pragma region Movement
+	Vector2 tempPos = *Position;
+
 	switch (_currentInput)
 	{
 	case Input::Keys::A:
@@ -70,6 +74,11 @@ void Player::Update(int elapsedTime)
 		break;
 	default:
 		break;
+	}
+
+	if (GameManager::GameObjectManager.HasGameObjectCollided(this)) 
+	{
+		Position = &tempPos;
 	}
 
 	_currentInput = Input::Keys::RIGHTCONTROL;
