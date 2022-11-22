@@ -12,48 +12,67 @@ GameObjectManager::~GameObjectManager()
 
 void GameObjectManager::DestroyGameObject(GameObject_P gO)
 {
-	for (GameObject_P gOp : _gameObjects)
+	_objectsToFlush.push_back(gO);
+}
+
+void GameObjectManager::FlushGameObjects()
+{
+	for (auto gO : _objectsToFlush)
 	{
-		if (gOp == gO)
+		for (int i = 0; i < _gameObjects.size(); ++i)
 		{
-			delete gOp;
+			if (_gameObjects[i] == gO)
+				_gameObjects.erase(_gameObjects.begin() + i);
 		}
 
-		gO = nullptr;
+		auto col = dynamic_cast<Collidable_P>(gO);
+
+		if (col)
+		{
+			for (int i = 0; i < _collidables.size(); ++i)
+			{
+				if (_collidables[i] == col)
+					_collidables.erase(_collidables.begin() + i);
+			}
+		}
+
+		delete gO;
 	}
+
+	_objectsToFlush.clear();
 }
 
 void GameObjectManager::AddGameObject(GameObject_P gO)
 {
 	_gameObjects.push_back(gO);
+
+	auto collidable = dynamic_cast<Collidable_P>(gO);
+	if (collidable != nullptr)
+		_collidables.push_back(collidable);
 }
 
-bool GameObjectManager::HasGameObjectCollided(GameObject_P gO)
+GameObject* GameObjectManager::HasGameObjectCollided(GameObject_P gO)
 {
-	Collidable* gOCollider = dynamic_cast<Collidable*>(gO);
+	auto gOCollider = dynamic_cast<Collidable_P>(gO);
 
 	if (gOCollider == nullptr)
-	{
-		return false;
-	}
+		return nullptr;
 
-	for (GameObject_P gameObject : _gameObjects)
+	for (Collidable_P collidable : _collidables)
 	{
-		Collidable* col = dynamic_cast<Collidable*>(gameObject);
+		if (gOCollider == collidable)
+			continue;
 
-		if (col != nullptr)
+		if (gOCollider->IsCollided(collidable->GetSelf()))
 		{
-			if (!col->IsTrigger())
-			{
-				if (gOCollider->IsCollided(gameObject))
-				{
-					return true;
-				}
-			}
+			collidable->OnCollision(gOCollider->GetSelf());
+			gOCollider->OnCollision(collidable->GetSelf());
+
+			return collidable->GetSelf();
 		}
 	}
 
-	return false;
+	return nullptr;
 }
 
 void GameObjectManager::UpdateGameObjects(int elapsedTime)
@@ -68,10 +87,9 @@ void GameObjectManager::DrawGameObjects()
 {
 	for (GameObject_P gO : _gameObjects)
 	{
-		if (dynamic_cast<PauseScreen*>(gO) != nullptr)
+		if (!gO || dynamic_cast<PauseScreen*>(gO) != nullptr)
 			continue;
 
-		if (gO)
-			SpriteBatch::Draw(gO->Texture, gO->Position, gO->SourceRect);
+		SpriteBatch::Draw(gO->Texture, gO->Position, gO->SourceRect);
 	}
 }
