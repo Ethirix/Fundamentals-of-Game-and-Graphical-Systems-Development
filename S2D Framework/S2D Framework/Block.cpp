@@ -2,11 +2,12 @@
 
 #include "GameManager.h"
 
-Block::Block(S2D::Rect* srcRect, S2D::Vector2* position, bool isATrigger)
+Block::Block(S2D::Rect* srcRect, S2D::Vector2* position, bool isATrigger, std::string textureKey)
 	: GameObject(), Collidable(this, isATrigger)
 {
 	Position = position;
 	SourceRect = srcRect;
+	_textureKey = textureKey;
 }
 
 Block::~Block()

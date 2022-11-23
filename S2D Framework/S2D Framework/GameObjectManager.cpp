@@ -1,6 +1,7 @@
 #include "GameObjectManager.h"
 #include "Collidable.h"
 #include "PauseScreen.h"
+#include "TextureManager.h"
 
 GameObjectManager::~GameObjectManager()
 {
@@ -74,6 +75,17 @@ GameObject* GameObjectManager::HasGameObjectCollided(GameObject_P gO)
 
 	return nullptr;
 }
+
+void GameObjectManager::LoadGameObjectTextures()
+{
+	TextureManager::InitializeTextureManager();
+
+	for (GameObject_P gO : _gameObjects)
+	{
+		gO->Load();
+	}
+}
+
 
 void GameObjectManager::UpdateGameObjects(int elapsedTime)
 {

@@ -14,20 +14,17 @@ TheGame::~TheGame() = default;
 
 void TheGame::LoadContent() 
 {
-	auto block = new Block(new Rect(0.0f, 0.0f, 12, 12), new Vector2(200.0f, 200.0f), false);
-	auto block2 = new Block(new Rect(0.0f, 0.0f, 12, 12), new Vector2(200.0f, 250.0f), true);
-	auto plr = new Player(0.1f, new Rect(0.0f, 0.0f, 32, 32), new Vector2(100.0f, 100.0f));
-	auto pause = new PauseScreen(new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportHeight()), "PAUSED");
-
-	block->Texture->Load("Textures/Munchie.tga", false);
-	block2->Texture->Load("Textures/MunchieInverted.tga", false);
-	plr->Texture->Load("Textures/Pacman.tga", false);
-	pause->Texture->Load("Textures/Transparency.png", false);
+	auto block = new Block(new Rect(0.0f, 0.0f, 12, 12), new Vector2(200.0f, 200.0f), false, "munchie");
+	auto block2 = new Block(new Rect(0.0f, 0.0f, 12, 12), new Vector2(200.0f, 250.0f), true, "munchieInverted");
+	auto plr = new Player(0.1f, new Rect(0.0f, 0.0f, 32, 32), new Vector2(100.0f, 100.0f), "pacman");
+	auto pause = new PauseScreen(new Rect(0.0f, 0.0f, Graphics::GetViewportWidth(), Graphics::GetViewportHeight()), "PAUSED", "transparency");
 
 	GameManager::GameObjectManager.AddGameObject(plr);
 	GameManager::GameObjectManager.AddGameObject(block);
 	GameManager::GameObjectManager.AddGameObject(block2);
 	GameManager::GameObjectManager.AddGameObject(pause);
+
+	GameManager::GameObjectManager.LoadGameObjectTextures();
 }
 
 void TheGame::Update(int elapsedTime)
