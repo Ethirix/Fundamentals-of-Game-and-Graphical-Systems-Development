@@ -7,7 +7,7 @@ class Block :
     public GameObject, public Collidable
 {
 public:
-    Block(S2D::Rect* srcRect, S2D::Vector2* position, bool isATrigger); //TheGame* game
+    Block(S2D::Rect* srcRect, S2D::Vector2* position, bool isATrigger, std::string textureKey);
     ~Block() override;
 
     void Update(int elapsedTime) override;

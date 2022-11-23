@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "GameManager.h"
 
-Player::Player(float speed, Rect* srcRect, Vector2* position) 
+Player::Player(float speed, Rect* srcRect, Vector2* position, std::string textureKey) 
 	: GameObject(), Collidable(this, false)
 {
 	MovementSpeed = speed;
@@ -12,6 +12,8 @@ Player::Player(float speed, Rect* srcRect, Vector2* position)
 	_animations[Direction::Up] = new Animation(250, 2, Vector2(0, 96), Vector2(32, 32));
 	_animations[Direction::Left] = new Animation(250, 2, Vector2(0, 64), Vector2(32, 32));
 	_animations[Direction::Right] = new Animation(250, 2, Vector2(0, 0), Vector2(32, 32));
+
+	_textureKey = textureKey;
 }
 
 Player::~Player()

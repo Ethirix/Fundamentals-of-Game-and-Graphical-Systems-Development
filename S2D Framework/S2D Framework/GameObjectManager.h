@@ -16,6 +16,7 @@ public:
 	void FlushGameObjects();
 	GameObject_P HasGameObjectCollided(GameObject_P gO);
 
+	void LoadGameObjectTextures();
 	void UpdateGameObjects(int elapsedTime);
 	void DrawGameObjects();
 

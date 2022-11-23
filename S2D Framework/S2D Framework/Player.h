@@ -13,7 +13,7 @@ using namespace S2D;
 class Player : public GameObject, public Collidable
 {
 public:
-	Player(float speed, Rect* srcRect, Vector2* position);
+	Player(float speed, Rect* srcRect, Vector2* position, std::string textureKey);
 	~Player() override;
 
 	void Update(int elapsedTime) override;
