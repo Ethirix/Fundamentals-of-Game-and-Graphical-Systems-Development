@@ -6,15 +6,18 @@
 #include "GameObject.h"
 #include "S2D/S2D.h"
 #include "Direction.cpp"
+#include "Collidable.h"
+
 using namespace S2D;
 
-class Player : public GameObject
+class Player : public GameObject, public Collidable
 {
 public:
-	Player(float speed, Rect* srcRect, Vector2* position);
+	Player(float speed, Rect* srcRect, Vector2* position, std::string textureKey);
 	~Player() override;
 
 	void Update(int elapsedTime) override;
+	void OnCollision(GameObject* collidedObject) override;
 	float MovementSpeed = 0;
 
 private:
@@ -22,5 +25,5 @@ private:
 	Input::Keys _lastInput = Input::Keys::RIGHTCONTROL;
 	int _frame = 0;
 
-	map<Direction, Animation> _animations;
+	map<Direction, Animation*> _animations;
 };
