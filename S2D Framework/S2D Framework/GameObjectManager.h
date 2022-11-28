@@ -1,6 +1,9 @@
 #pragma once
 #include <vector>
+
+#include "Block.h"
 #include "GameObject.h"
+#include "PauseScreen.h"
 #include "Player.h"
 
 typedef GameObject* GameObject_P;
@@ -53,4 +56,3 @@ private:
 	vector<Collidable_P> _collidables;
 	vector<GameObject_P> _objectsToFlush;
 };
-
