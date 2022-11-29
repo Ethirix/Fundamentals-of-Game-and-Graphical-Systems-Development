@@ -3,17 +3,17 @@
 #include <utility>
 #include "GameManager.h"
 
-Player::Player(float speed, Rect* srcRect, Vector2* position, int renderDepth, std::string textureKey) 
+Player::Player(float speed, S2D::Rect* srcRect, S2D::Vector2* position, int renderDepth, std::string textureKey)
 	: GameObject(), Collidable(this, false)
 {
 	MovementSpeed = speed;
 	SourceRect = srcRect;
 	Position = position;
 
-	_animations[Direction::Down] = new Animation(250, 2, Vector2(0, 32), Vector2(32, 32));
-	_animations[Direction::Up] = new Animation(250, 2, Vector2(0, 96), Vector2(32, 32));
-	_animations[Direction::Left] = new Animation(250, 2, Vector2(0, 64), Vector2(32, 32));
-	_animations[Direction::Right] = new Animation(250, 2, Vector2(0, 0), Vector2(32, 32));
+	_animations[Direction::Down] = new Animation(250, 2, S2D::Vector2(0, 32), S2D::Vector2(32, 32));
+	_animations[Direction::Up] = new Animation(250, 2, S2D::Vector2(0, 96), S2D::Vector2(32, 32));
+	_animations[Direction::Left] = new Animation(250, 2, S2D::Vector2(0, 64), S2D::Vector2(32, 32));
+	_animations[Direction::Right] = new Animation(250, 2, S2D::Vector2(0, 0), S2D::Vector2(32, 32));
 
 	_renderDepth = renderDepth;
 	_textureKey = std::move(textureKey);
@@ -34,7 +34,7 @@ Player::~Player()
 
 void Player::Update(int elapsedTime)
 {
-	Input::KeyboardState* keyboardState = Input::Keyboard::GetState();
+	S2D::Input::KeyboardState* keyboardState = S2D::Input::Keyboard::GetState();
 
 #pragma region UpdateAnimations
 	for (auto& anim : _animations)
@@ -44,43 +44,43 @@ void Player::Update(int elapsedTime)
 #pragma endregion
 
 #pragma region GetInput
-	if (keyboardState->IsKeyDown(Input::Keys::W))
+	if (keyboardState->IsKeyDown(S2D::Input::Keys::W))
 	{
-		_lastInput = Input::Keys::W;
-		_currentInput = Input::Keys::W;
+		_lastInput = S2D::Input::Keys::W;
+		_currentInput = S2D::Input::Keys::W;
 	}
-	if (keyboardState->IsKeyDown(Input::Keys::S))
+	if (keyboardState->IsKeyDown(S2D::Input::Keys::S))
 	{
-		_lastInput = Input::Keys::S;
-		_currentInput = Input::Keys::S;
+		_lastInput = S2D::Input::Keys::S;
+		_currentInput = S2D::Input::Keys::S;
 	}
-	if (keyboardState->IsKeyDown(Input::Keys::A))
+	if (keyboardState->IsKeyDown(S2D::Input::Keys::A))
 	{
-		_lastInput = Input::Keys::A;
-		_currentInput = Input::Keys::A;
+		_lastInput = S2D::Input::Keys::A;
+		_currentInput = S2D::Input::Keys::A;
 	}
-	if (keyboardState->IsKeyDown(Input::Keys::D))
+	if (keyboardState->IsKeyDown(S2D::Input::Keys::D))
 	{
-		_lastInput = Input::Keys::D;
-		_currentInput = Input::Keys::D;
+		_lastInput = S2D::Input::Keys::D;
+		_currentInput = S2D::Input::Keys::D;
 	}
 #pragma endregion
 
 #pragma region Movement
-	Vector2 tempPos = *Position;
+	S2D::Vector2 tempPos = *Position;
 
 	switch (_currentInput)
 	{
-	case Input::Keys::A:
+	case S2D::Input::Keys::A:
 		Position->X -= MovementSpeed * elapsedTime;
 		break;
-	case Input::Keys::W:
+	case S2D::Input::Keys::W:
 		Position->Y -= MovementSpeed * elapsedTime;
 		break;
-	case Input::Keys::S:
+	case S2D::Input::Keys::S:
 		Position->Y += MovementSpeed * elapsedTime;
 		break;
-	case Input::Keys::D:
+	case S2D::Input::Keys::D:
 		Position->X += MovementSpeed * elapsedTime;
 		break;
 	default:
@@ -95,23 +95,23 @@ void Player::Update(int elapsedTime)
 		Position->Y = tempPos.Y;
 	}
 
-	_currentInput = Input::Keys::RIGHTCONTROL;
+	_currentInput = S2D::Input::Keys::RIGHTCONTROL;
 #pragma endregion
 
 #pragma region Animation
 	auto currentDirection = Direction::Right;
 	switch (_lastInput)
 	{
-	case Input::Keys::A:
+	case S2D::Input::Keys::A:
 		currentDirection = Direction::Left;
 		break;
-	case Input::Keys::W:
+	case S2D::Input::Keys::W:
 		currentDirection = Direction::Up;
 		break;
-	case Input::Keys::S:
+	case S2D::Input::Keys::S:
 		currentDirection = Direction::Down;
 		break;
-	case Input::Keys::D:
+	case S2D::Input::Keys::D:
 	default:
 		currentDirection = Direction::Right;
 		break;
@@ -121,22 +121,22 @@ void Player::Update(int elapsedTime)
 #pragma endregion
 
 #pragma region ScreenWrap
-	if (Position->X + static_cast<float>(SourceRect->Width) > static_cast<float>(Graphics::GetViewportWidth()))
+	if (Position->X + static_cast<float>(SourceRect->Width) > static_cast<float>(S2D::Graphics::GetViewportWidth()))
 	{
 		Position->X = 0;
 	}
 	if (Position->X < 0)
 	{
-		Position->X = static_cast<float>(Graphics::GetViewportWidth() - SourceRect->Width);
+		Position->X = static_cast<float>(S2D::Graphics::GetViewportWidth() - SourceRect->Width);
 	}
 
-	if (Position->Y + static_cast<float>(SourceRect->Height) > static_cast<float>(Graphics::GetViewportHeight()))
+	if (Position->Y + static_cast<float>(SourceRect->Height) > static_cast<float>(S2D::Graphics::GetViewportHeight()))
 	{
 		Position->Y = 0;
 	}
 	if (Position->Y < 0)
 	{
-		Position->Y = static_cast<float>(Graphics::GetViewportHeight() - SourceRect->Height);
+		Position->Y = static_cast<float>(S2D::Graphics::GetViewportHeight() - SourceRect->Height);
 	}
 #pragma endregion
 }

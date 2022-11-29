@@ -121,7 +121,7 @@ void GameObjectManager::DrawGameObjects()
 			if (!gO || dynamic_cast<PauseScreen*>(gO) != nullptr)
 				continue;
 
-			SpriteBatch::Draw(gO->Texture, gO->Position, gO->SourceRect);
+			S2D::SpriteBatch::Draw(gO->Texture, gO->Position, gO->SourceRect);
 		}
 	}
 }
