@@ -2,11 +2,12 @@
 
 #include "GameManager.h"
 
-Block::Block(S2D::Rect* srcRect, S2D::Vector2* position, bool isATrigger, std::string textureKey)
+Block::Block(S2D::Rect* srcRect, S2D::Vector2* position, int renderDepth, bool isATrigger, std::string textureKey)
 	: GameObject(), Collidable(this, isATrigger)
 {
 	Position = position;
 	SourceRect = srcRect;
+	_renderDepth = renderDepth;
 	_textureKey = textureKey;
 }
 
@@ -23,5 +24,5 @@ void Block::Update(int elapsedTime)
 
 void Block::OnCollision(GameObject* collidedObject)
 {
-	GameManager::GameObjectManager.DestroyGameObject(this);
+	//GameManager::GameObjectManager.DestroyGameObject(this);
 }

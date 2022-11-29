@@ -1,10 +1,9 @@
 #pragma once
 #include <vector>
 
-#include "Block.h"
 #include "GameObject.h"
-#include "PauseScreen.h"
 #include "Player.h"
+#include "RenderQueue.h"
 
 typedef GameObject* GameObject_P;
 typedef Collidable* Collidable_P;
@@ -12,6 +11,7 @@ typedef Collidable* Collidable_P;
 class GameObjectManager
 {
 public:
+	GameObjectManager();
 	~GameObjectManager();
 
 	void AddGameObject(GameObject_P gO);
@@ -52,6 +52,7 @@ public:
 	}
 
 private:
+	RenderQueue _renderQueue;
 	vector<GameObject_P> _gameObjects;
 	vector<Collidable_P> _collidables;
 	vector<GameObject_P> _objectsToFlush;
