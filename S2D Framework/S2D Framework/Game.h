@@ -12,9 +12,9 @@
 #include "Player.h"
 #include "PauseScreen.h"
 
-using namespace S2D;
 
-class TheGame : public Game 
+
+class TheGame : public S2D::Game 
 {
 public:
 	TheGame(int argc, char* argv[]);
@@ -26,8 +26,8 @@ public:
 
 	bool IsGamePaused = false;
 private:
-	Input::Keys _pauseKey = Input::Keys::ESCAPE;
+	S2D::Input::Keys _pauseKey = S2D::Input::Keys::ESCAPE;
 	bool _isPauseKeyDown = false;
 
-	void DrawString(string str, Vector2 position, const Color* color);
+	void DrawString(string str, S2D::Vector2 position, const S2D::Color* color);
 };
