@@ -14,10 +14,10 @@ TheGame::~TheGame() = default;
 
 void TheGame::LoadContent() 
 {
-	auto block = new Block(new S2D::Rect(0.0f, 0.0f, 12, 12), new S2D::Vector2(200.0f, 200.0f), 1, false, "munchie");
-	auto block2 = new Block(new S2D::Rect(0.0f, 0.0f, 12, 12), new S2D::Vector2(200.0f, 250.0f), 1, true, "munchieInverted");
-	auto plr = new Player(0.1f, new S2D::Rect(0.0f, 0.0f, 32, 32), new S2D::Vector2(100.0f, 100.0f), 13, "pacman");
-	auto pause = new PauseScreen(new S2D::Rect(0.0f, 0.0f, S2D::Graphics::GetViewportWidth(), S2D::Graphics::GetViewportHeight()), "PAUSED", 15, "transparency");
+	auto block = new Block(new S2D::Rect(0.0f, 0.0f, 32, 32), new S2D::Vector2(200.0f, 200.0f), 1, false, "crosscube");
+	auto block2 = new Block(new S2D::Rect(0.0f, 0.0f, 12, 12), new S2D::Vector2(200.0f, 250.0f), 1, true, "MunchieInverted");
+	auto plr = new Player(0.1f, new S2D::Rect(0.0f, 0.0f, 32, 32), new S2D::Vector2(100.0f, 100.0f), 13, "Pacman");
+	auto pause = new PauseScreen(new S2D::Rect(0.0f, 0.0f, S2D::Graphics::GetViewportWidth(), S2D::Graphics::GetViewportHeight()), "PAUSED", 15, "Transparency");
 
 	GameManager::GameObjectManager.AddGameObject(plr);
 	GameManager::GameObjectManager.AddGameObject(block);

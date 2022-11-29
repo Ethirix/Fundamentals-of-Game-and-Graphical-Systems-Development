@@ -10,6 +10,7 @@ GameObjectManager::GameObjectManager()
 
 
 GameObjectManager::~GameObjectManager()
+
 {
 	for (GameObject_P gO : _gameObjects)
 	{
@@ -26,7 +27,7 @@ void GameObjectManager::FlushGameObjects()
 {
 	for (auto gO : _objectsToFlush)
 	{
-		for (int i = 0; i < _gameObjects.size(); ++i)
+		for (int i = 0; i < static_cast<int>(_gameObjects.size()); ++i)
 		{
 			if (_gameObjects[i] == gO)
 				_gameObjects.erase(_gameObjects.begin() + i);
@@ -36,7 +37,7 @@ void GameObjectManager::FlushGameObjects()
 
 		if (col)
 		{
-			for (int i = 0; i < _collidables.size(); ++i)
+			for (int i = 0; i < static_cast<int>(_collidables.size()); ++i)
 			{
 				if (_collidables[i] == col)
 					_collidables.erase(_collidables.begin() + i);
