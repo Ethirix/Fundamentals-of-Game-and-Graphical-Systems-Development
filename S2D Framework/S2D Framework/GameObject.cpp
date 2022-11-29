@@ -6,3 +6,8 @@ void GameObject::Load()
 {
 	Texture->Load(TextureManager::TextureMap[_textureKey].c_str(), false);
 }
+
+int GameObject::GetRenderDepth()
+{
+	return _renderDepth;
+}

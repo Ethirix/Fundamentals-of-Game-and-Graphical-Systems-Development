@@ -9,7 +9,7 @@ public:
 	Collidable(GameObject* selfObject);
 	Collidable(GameObject* selfObject, bool isATrigger);
 	virtual ~Collidable() = default;
-	bool IsCollided(GameObject* objectToCheck);
+	bool IsCollided(const GameObject* objectToCheck);
 	bool IsTrigger();
 	virtual void OnCollision(GameObject* collidedObject);
 	GameObject* GetSelf();

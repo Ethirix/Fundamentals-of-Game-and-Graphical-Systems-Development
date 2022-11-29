@@ -3,6 +3,12 @@
 #include "PauseScreen.h"
 #include "TextureManager.h"
 
+GameObjectManager::GameObjectManager()
+{
+	_renderQueue = RenderQueue(16);
+}
+
+
 GameObjectManager::~GameObjectManager()
 {
 	for (GameObject_P gO : _gameObjects)
@@ -37,6 +43,8 @@ void GameObjectManager::FlushGameObjects()
 			}
 		}
 
+		_renderQueue.Remove(gO);
+
 		delete gO;
 	}
 
@@ -46,6 +54,7 @@ void GameObjectManager::FlushGameObjects()
 void GameObjectManager::AddGameObject(GameObject_P gO)
 {
 	_gameObjects.push_back(gO);
+	_renderQueue.Add(gO);
 
 	auto collidable = dynamic_cast<Collidable_P>(gO);
 	if (collidable != nullptr)
@@ -97,11 +106,22 @@ void GameObjectManager::UpdateGameObjects(int elapsedTime)
 
 void GameObjectManager::DrawGameObjects()
 {
-	for (GameObject_P gO : _gameObjects)
+	/*for (GameObject_P gO : _gameObjects)
 	{
 		if (!gO || dynamic_cast<PauseScreen*>(gO) != nullptr)
 			continue;
 
 		SpriteBatch::Draw(gO->Texture, gO->Position, gO->SourceRect);
+	}*/
+
+	for (int i = 0; i < _renderQueue.GetQueueSize(); i++)
+	{
+		for (auto gO : _renderQueue.RndQueue[i])
+		{
+			if (!gO || dynamic_cast<PauseScreen*>(gO) != nullptr)
+				continue;
+
+			SpriteBatch::Draw(gO->Texture, gO->Position, gO->SourceRect);
+		}
 	}
 }

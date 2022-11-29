@@ -14,6 +14,9 @@ public:
 	S2D::Texture2D* Texture = new S2D::Texture2D();
 	S2D::Rect* SourceRect = new S2D::Rect();
 
+	int GetRenderDepth();
+
 protected:
 	std::string _textureKey;
+	int _renderDepth = 5;
 };
