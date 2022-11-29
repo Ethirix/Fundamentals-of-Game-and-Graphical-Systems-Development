@@ -1,6 +1,9 @@
 #include "Animation.h"
 
-Animation::Animation() = default;
+Animation::Animation()
+{
+	SourceRect = new S2D::Rect(0, 0, 0, 0);
+}
 
 Animation::Animation(int updateTime, int animationCount, S2D::Vector2 rectStartPosition, S2D::Vector2 rectSize)
 {
@@ -9,7 +12,7 @@ Animation::Animation(int updateTime, int animationCount, S2D::Vector2 rectStartP
 	_rectSize = rectSize;
 	_rectStartPosition = rectStartPosition;
 
-	SourceRect = new S2D::Rect(_rectStartPosition.X, _rectStartPosition.Y, _rectSize.X,_rectSize.Y);
+	SourceRect = new S2D::Rect(_rectStartPosition.X, _rectStartPosition.Y, static_cast<int>(_rectSize.X), static_cast<int>(_rectSize.Y));
 }
 
 Animation::~Animation()
