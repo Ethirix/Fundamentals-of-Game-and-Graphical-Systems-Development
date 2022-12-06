@@ -6,6 +6,8 @@
 class GameObject
 {
 public:
+	GameObject() = default;
+	GameObject(const GameObject& gO);
 	virtual ~GameObject() = default;
 	virtual void Update(int elapsedTime);
 	virtual void Load();
@@ -15,6 +17,7 @@ public:
 	S2D::Rect* SourceRect = new S2D::Rect();
 
 	int GetRenderDepth();
+	std::string GetTextureKey();
 
 protected:
 	std::string _textureKey;

@@ -8,12 +8,12 @@
 #include "Direction.cpp"
 #include "Collidable.h"
 
-using namespace S2D;
+
 
 class Player : public GameObject, public Collidable
 {
 public:
-	Player(float speed, Rect* srcRect, Vector2* position, int renderDepth, std::string textureKey);
+	Player(float speed, S2D::Rect* srcRect, S2D::Vector2* position, int renderDepth, std::string textureKey);
 	~Player() override;
 
 	void Update(int elapsedTime) override;
@@ -21,8 +21,8 @@ public:
 	float MovementSpeed = 0;
 
 private:
-	Input::Keys _currentInput = Input::Keys::D;
-	Input::Keys _lastInput = Input::Keys::RIGHTCONTROL;
+	S2D::Input::Keys _currentInput = S2D::Input::Keys::D;
+	S2D::Input::Keys _lastInput = S2D::Input::Keys::RIGHTCONTROL;
 	int _frame = 0;
 
 	map<Direction, Animation*> _animations;
