@@ -2,6 +2,7 @@
 
 #include <utility>
 #include "GameManager.h"
+#include "Block.h"
 
 Player::Player(float speed, S2D::Rect* srcRect, S2D::Vector2* position, int renderDepth, std::string textureKey)
 	: GameObject(), Collidable(this, false)
@@ -87,6 +88,26 @@ void Player::Update(int elapsedTime)
 		break;
 	}
 
+#pragma region ScreenWrap
+	if (Position->X + static_cast<float>(SourceRect->Width) > static_cast<float>(S2D::Graphics::GetViewportWidth()))
+	{
+		Position->X = 0;
+	}
+	if (Position->X < 0)
+	{
+		Position->X = static_cast<float>(S2D::Graphics::GetViewportWidth() - SourceRect->Width);
+	}
+
+	if (Position->Y + static_cast<float>(SourceRect->Height) > static_cast<float>(S2D::Graphics::GetViewportHeight()))
+	{
+		Position->Y = 0;
+	}
+	if (Position->Y < 0)
+	{
+		Position->Y = static_cast<float>(S2D::Graphics::GetViewportHeight() - SourceRect->Height);
+	}
+#pragma endregion
+
 	auto collider = GameManager::GameObjectManager.HasGameObjectCollided(this);
 
 	if (collider && !dynamic_cast<Collidable*>(collider)->IsTrigger()) 
@@ -119,28 +140,18 @@ void Player::Update(int elapsedTime)
 	
 	SourceRect = _animations[currentDirection]->SourceRect;
 #pragma endregion
-
-#pragma region ScreenWrap
-	if (Position->X + static_cast<float>(SourceRect->Width) > static_cast<float>(S2D::Graphics::GetViewportWidth()))
-	{
-		Position->X = 0;
-	}
-	if (Position->X < 0)
-	{
-		Position->X = static_cast<float>(S2D::Graphics::GetViewportWidth() - SourceRect->Width);
-	}
-
-	if (Position->Y + static_cast<float>(SourceRect->Height) > static_cast<float>(S2D::Graphics::GetViewportHeight()))
-	{
-		Position->Y = 0;
-	}
-	if (Position->Y < 0)
-	{
-		Position->Y = static_cast<float>(S2D::Graphics::GetViewportHeight() - SourceRect->Height);
-	}
-#pragma endregion
 }
 
 void Player::OnCollision(GameObject* collidedObject)
 {
+	if (dynamic_cast<Block*>(collidedObject))
+	{
+		Block* block = dynamic_cast<Block*>(collidedObject);
+		S2D::Input::KeyboardState* keyboardState = S2D::Input::Keyboard::GetState();
+
+		if (keyboardState->IsKeyDown(S2D::Input::Keys::E))
+		{
+			GameManager::GameObjectManager.DestroyGameObject(block);
+		}
+	}
 }

@@ -23,7 +23,6 @@ public:
 private:
 	S2D::Input::Keys _currentInput = S2D::Input::Keys::D;
 	S2D::Input::Keys _lastInput = S2D::Input::Keys::RIGHTCONTROL;
-	int _frame = 0;
 
 	map<Direction, Animation*> _animations;
 };

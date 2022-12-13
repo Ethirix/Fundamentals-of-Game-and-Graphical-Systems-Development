@@ -89,6 +89,7 @@
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Collidable.cpp" />
     <ClCompile Include="Direction.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -104,6 +105,7 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Collidable.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameObject.h" />

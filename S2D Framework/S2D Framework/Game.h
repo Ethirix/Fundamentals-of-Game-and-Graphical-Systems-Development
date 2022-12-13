@@ -30,4 +30,5 @@ private:
 	bool _isPauseKeyDown = false;
 
 	void DrawString(string str, S2D::Vector2 position, const S2D::Color* color);
+	int oneSecondTimer = 0;
 };

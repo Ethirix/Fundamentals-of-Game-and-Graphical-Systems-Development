@@ -107,14 +107,6 @@ void GameObjectManager::UpdateGameObjects(int elapsedTime)
 
 void GameObjectManager::DrawGameObjects()
 {
-	/*for (GameObject_P gO : _gameObjects)
-	{
-		if (!gO || dynamic_cast<PauseScreen*>(gO) != nullptr)
-			continue;
-
-		SpriteBatch::Draw(gO->Texture, gO->Position, gO->SourceRect);
-	}*/
-
 	for (int i = 0; i < _renderQueue.GetQueueSize(); i++)
 	{
 		for (auto gO : _renderQueue.RndQueue[i])
