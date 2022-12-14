@@ -86,6 +86,11 @@ GameObject* GameObjectManager::HasGameObjectCollided(GameObject_P gO)
 	return nullptr;
 }
 
+void GameObjectManager::LoadGameObjectTexture(GameObject_P gO)
+{
+	gO->Load();
+}
+
 void GameObjectManager::LoadGameObjectTextures()
 {
 	TextureManager::InitializeTextureManager();
@@ -99,9 +104,9 @@ void GameObjectManager::LoadGameObjectTextures()
 
 void GameObjectManager::UpdateGameObjects(int elapsedTime)
 {
-	for (GameObject_P gO : _gameObjects)
+	for (int i = 0; i < _gameObjects.size(); i++)
 	{
-		gO->Update(elapsedTime);
+		_gameObjects[i]->Update(elapsedTime);
 	}
 }
 

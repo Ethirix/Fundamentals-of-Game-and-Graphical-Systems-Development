@@ -87,6 +87,7 @@
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Block.cpp" />
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Collidable.cpp" />
     <ClCompile Include="Direction.cpp" />
     <ClCompile Include="Enemy.cpp" />
@@ -104,6 +105,7 @@
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Block.h" />
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="Collidable.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />

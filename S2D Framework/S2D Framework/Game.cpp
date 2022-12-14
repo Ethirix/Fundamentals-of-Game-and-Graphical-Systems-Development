@@ -23,6 +23,8 @@ void TheGame::LoadContent()
 
 	GameManager::GameObjectManager.AddGameObject(pause);
 	GameManager::GameObjectManager.LoadGameObjectTextures();
+
+	//GameManager::GameObjectManager.GetGameObjectOfType<Player>()->ShootSFX->Load("Audio/shoot.wav");
 }
 
 void TheGame::Update(int elapsedTime)
@@ -43,10 +45,16 @@ void TheGame::Update(int elapsedTime)
 		_isPauseKeyDown = true;
 	}
 
+	if (GameManager::GameObjectManager.GetGameObjectOfType<Player>()->GetDeadState())
+	{
+		IsGamePaused = true;
+	}
+
 	if (keyboardState->IsKeyUp(_pauseKey))
 	{
 		_isPauseKeyDown = false;
 	}
+
 #pragma endregion
 
 	if (!IsGamePaused)
@@ -76,10 +84,15 @@ void TheGame::Draw(int elapsedTime)
 	if (plr != nullptr)
 		DrawString("Player X: " + to_string(plr->Position->X) + " Y: " + to_string(plr->Position->Y), S2D::Vector2(10.0f, 25.0f), S2D::Color::White);
 
-	if (IsGamePaused)
+	if (IsGamePaused && !plr->GetDeadState())
 	{
 		auto pause = GameManager::GameObjectManager.GetGameObjectOfType<PauseScreen>();
 		DrawString(pause->PauseText, S2D::Vector2(static_cast<float>(S2D::Graphics::GetViewportWidth()) / 2.1f,
+			static_cast<float>(S2D::Graphics::GetViewportHeight()) / 2.1f), S2D::Color::Red);
+	}
+	else if (IsGamePaused && plr->GetDeadState())
+	{
+		DrawString("YOU ARE DEAD", S2D::Vector2(static_cast<float>(S2D::Graphics::GetViewportWidth()) / 2.1f,
 			static_cast<float>(S2D::Graphics::GetViewportHeight()) / 2.1f), S2D::Color::Red);
 	}
 #pragma endregion
