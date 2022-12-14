@@ -11,6 +11,8 @@ public:
 
 	void Update(int elapsedTime);
 
+	int GetUpdateTime();
+
 	S2D::Rect* SourceRect;
 private:
 	S2D::Vector2 _rectSize;
