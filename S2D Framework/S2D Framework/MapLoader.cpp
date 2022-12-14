@@ -1,5 +1,6 @@
 #include "MapLoader.h"
 #include "GameManager.h"
+#include "Enemy.h"
 #include <filesystem>
 #include <fstream>
 
@@ -39,7 +40,14 @@ void MapLoader::LoadMap()
 					GameManager::GameObjectManager.AddGameObject(plr);
 				}
 				
-
+				if (dynamic_cast<Enemy*>(map[line[i]]))
+				{
+					Enemy original = *dynamic_cast<Enemy*>(map[line[i]]);
+					Enemy* enemy = new Enemy(0.1f, new S2D::Rect(original.SourceRect->X, original.SourceRect->Y, original.SourceRect->Width, original.SourceRect->Height),
+						new S2D::Vector2(32 * i, 32 * lineNo), original.GetRenderDepth(), original.GetTextureKey());
+					
+					GameManager::GameObjectManager.AddGameObject(enemy);
+				}
 			}
 		}
 		file.close();
@@ -51,6 +59,7 @@ std::map<char, GameObject*> MapLoader::InitializeMap()
 {
 	std::map<char, GameObject*> map;
 	map['B'] = new Block(new S2D::Rect(0, 0, 32, 32), new S2D::Vector2(0, 0), 2, false, "bigsquares");
-	map['P'] = new Player(0.1f, new S2D::Rect(0, 0, 32, 32), new S2D::Vector2(0, 0), 2, "pacman");
+	map['P'] = new Player(0.1f, new S2D::Rect(0, 0, 30, 30), new S2D::Vector2(0, 0), 3, "pacman");
+	map['E'] = new Enemy(0.1f, new S2D::Rect(0, 0, 30, 30), new S2D::Vector2(0, 0), 3, "pacman");
 	return map;
 }
