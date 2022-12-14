@@ -3,6 +3,8 @@
 #include <utility>
 #include "GameManager.h"
 #include "Block.h"
+#include "Enemy.h"
+#include "Bullet.h"
 
 Player::Player(float speed, S2D::Rect* srcRect, S2D::Vector2* position, int renderDepth, std::string textureKey)
 	: GameObject(), Collidable(this, false)
@@ -65,6 +67,35 @@ void Player::Update(int elapsedTime)
 		_lastInput = S2D::Input::Keys::D;
 		_currentInput = S2D::Input::Keys::D;
 	}
+
+	Direction currentDirection = Direction::Right;
+	switch (_lastInput)
+	{
+	case S2D::Input::Keys::A:
+		currentDirection = Direction::Left;
+		break;
+	case S2D::Input::Keys::W:
+		currentDirection = Direction::Up;
+		break;
+	case S2D::Input::Keys::S:
+		currentDirection = Direction::Down;
+		break;
+	case S2D::Input::Keys::D:
+	default:
+		currentDirection = Direction::Right;
+		break;
+	}
+
+	if (timer < fireRate)
+		timer += elapsedTime;
+
+	if (keyboardState->IsKeyDown(S2D::Input::Keys::SPACE) && timer >= fireRate)
+	{
+		Bullet* bullet = new Bullet(1.0f, currentDirection, new S2D::Rect(0, 0, 6, 6), new S2D::Vector2(Position->X + SourceRect->Width / 2, Position->Y + SourceRect->Height / 2), 1, "bullet");
+		GameManager::GameObjectManager.AddGameObject(bullet);
+		GameManager::GameObjectManager.LoadGameObjectTexture(bullet);
+		timer = 0;
+	}
 #pragma endregion
 
 #pragma region Movement
@@ -120,24 +151,6 @@ void Player::Update(int elapsedTime)
 #pragma endregion
 
 #pragma region Animation
-	auto currentDirection = Direction::Right;
-	switch (_lastInput)
-	{
-	case S2D::Input::Keys::A:
-		currentDirection = Direction::Left;
-		break;
-	case S2D::Input::Keys::W:
-		currentDirection = Direction::Up;
-		break;
-	case S2D::Input::Keys::S:
-		currentDirection = Direction::Down;
-		break;
-	case S2D::Input::Keys::D:
-	default:
-		currentDirection = Direction::Right;
-		break;
-	}
-	
 	SourceRect = _animations[currentDirection]->SourceRect;
 #pragma endregion
 }
@@ -153,5 +166,9 @@ void Player::OnCollision(GameObject* collidedObject)
 		{
 			GameManager::GameObjectManager.DestroyGameObject(block);
 		}
+	}
+	else if (dynamic_cast<Enemy*>(collidedObject))
+	{
+		GameManager::GameObjectManager.DestroyGameObject(this);
 	}
 }

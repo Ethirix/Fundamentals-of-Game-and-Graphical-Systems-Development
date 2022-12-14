@@ -25,4 +25,6 @@ private:
 	S2D::Input::Keys _lastInput = S2D::Input::Keys::RIGHTCONTROL;
 
 	map<Direction, Animation*> _animations;
+	int fireRate = 250;
+	int timer = 0;
 };

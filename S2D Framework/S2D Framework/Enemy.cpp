@@ -2,6 +2,7 @@
 #include "Block.h"
 #include <time.h>
 #include "GameManager.h"
+#include "Bullet.h"
 
 Enemy::Enemy(float speed, S2D::Rect* srcRect, S2D::Vector2* position, int renderDepth, std::string textureKey)
 	: GameObject(), Collidable(this, false)
@@ -86,6 +87,9 @@ void Enemy::Update(int elapsedTime)
 
 void Enemy::OnCollision(GameObject* collidedObject)
 {
+	if (dynamic_cast<Bullet*>(collidedObject))
+		GameManager::GameObjectManager.DestroyGameObject(this);
+
 	RandomizeDirection();
 }
 
