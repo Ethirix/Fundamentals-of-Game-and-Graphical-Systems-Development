@@ -59,7 +59,7 @@ std::map<char, GameObject*> MapLoader::InitializeMap()
 {
 	std::map<char, GameObject*> map;
 	map['B'] = new Block(new S2D::Rect(0, 0, 32, 32), new S2D::Vector2(0, 0), 2, false, "bigsquares");
-	map['P'] = new Player(0.1f, new S2D::Rect(0, 0, 30, 30), new S2D::Vector2(0, 0), 3, "pacman");
-	map['E'] = new Enemy(0.1f, new S2D::Rect(0, 0, 30, 30), new S2D::Vector2(0, 0), 3, "pacman");
+	map['P'] = new Player(0.1f, new S2D::Rect(0, 0, 12, 16), new S2D::Vector2(0, 0), 3, "player2x");
+	map['E'] = new Enemy(0.1f, new S2D::Rect(0, 0, 12*2, 16*2), new S2D::Vector2(0, 0), 3, "enemies");
 	return map;
 }

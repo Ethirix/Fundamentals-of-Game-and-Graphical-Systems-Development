@@ -38,3 +38,8 @@ void Animation::Update(int elapsedTime)
 		                           _rectStartPosition.Y, static_cast<int>(_rectSize.X), static_cast<int>(_rectSize.Y));
 	}
 }
+
+int Animation::GetUpdateTime()
+{
+	return _updateTime;
+}

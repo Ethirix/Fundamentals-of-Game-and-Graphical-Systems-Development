@@ -18,13 +18,18 @@ public:
 
 	void Update(int elapsedTime) override;
 	void OnCollision(GameObject* collidedObject) override;
+	bool GetDeadState();
 	float MovementSpeed = 0;
 
 private:
 	S2D::Input::Keys _currentInput = S2D::Input::Keys::D;
 	S2D::Input::Keys _lastInput = S2D::Input::Keys::RIGHTCONTROL;
 
-	map<Direction, Animation*> _animations;
-	int fireRate = 250;
-	int timer = 0;
+	bool _dead = false;
+	int _deadAnimInt = 5;
+	int _deadTimer = 0;
+
+	map<int, Animation*> _animations;
+	int _fireRate = 250;
+	int _timer = 0;
 };
