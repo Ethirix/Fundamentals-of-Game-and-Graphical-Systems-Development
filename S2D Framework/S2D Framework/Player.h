@@ -5,10 +5,7 @@
 #include "Animation.h"
 #include "GameObject.h"
 #include "S2D/S2D.h"
-#include "Direction.cpp"
 #include "Collidable.h"
-
-
 
 class Player : public GameObject, public Collidable
 {
@@ -32,4 +29,6 @@ private:
 	map<int, Animation*> _animations;
 	int _fireRate = 250;
 	int _timer = 0;
+	S2D::SoundEffect* _deadSFX = new S2D::SoundEffect(false, 1, 0.5);
+	S2D::SoundEffect* _shootSFX = new S2D::SoundEffect(false, 1, 1);
 };
