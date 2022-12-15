@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <fstream>
 
+#include "Collectible.h"
+
 void MapLoader::LoadMap()
 {
 	std::map<char, GameObject*> map = MapLoader::InitializeMap();
@@ -48,6 +50,15 @@ void MapLoader::LoadMap()
 					
 					GameManager::GameObjectManager.AddGameObject(enemy);
 				}
+
+				if (dynamic_cast<Collectible*>(map[line[i]]))
+				{
+					Collectible original = *dynamic_cast<Collectible*>(map[line[i]]);
+					Collectible* collectible = new Collectible(25, new S2D::Rect(original.SourceRect->X, original.SourceRect->Y, original.SourceRect->Width, original.SourceRect->Height),
+						new S2D::Vector2(32 * i, 32 * lineNo), original.GetRenderDepth(), original.GetTextureKey());
+
+					GameManager::GameObjectManager.AddGameObject(collectible);
+				}
 			}
 		}
 		file.close();
@@ -61,5 +72,6 @@ std::map<char, GameObject*> MapLoader::InitializeMap()
 	map['B'] = new Block(new S2D::Rect(0, 0, 32, 32), new S2D::Vector2(0, 0), 2, false, "bigsquares");
 	map['P'] = new Player(0.1f, new S2D::Rect(0, 0, 12, 16), new S2D::Vector2(0, 0), 3, "player2x");
 	map['E'] = new Enemy(0.1f, new S2D::Rect(0, 0, 12*2, 16*2), new S2D::Vector2(0, 0), 3, "enemies");
+	map['C'] = new Collectible(25, new S2D::Rect(0, 0, 24, 32), new S2D::Vector2(0, 0), 2, "collectible");
 	return map;
 }

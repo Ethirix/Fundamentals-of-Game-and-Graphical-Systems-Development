@@ -5,6 +5,7 @@
 #include "Block.h"
 #include "Enemy.h"
 #include "Bullet.h"
+#include "Collectible.h"
 
 Player::Player(float speed, S2D::Rect* srcRect, S2D::Vector2* position, int renderDepth, std::string textureKey)
 	: GameObject(), Collidable(this, false)
@@ -203,6 +204,10 @@ void Player::OnCollision(GameObject* collidedObject)
 			S2D::Audio::Play(_deadSFX);
 		}
 	}
+	else if (dynamic_cast<Collectible*>(collidedObject))
+	{
+		_score += dynamic_cast<Collectible*>(collidedObject)->GetScore();
+	}
 }
 
 bool Player::GetDeadState()
@@ -212,3 +217,9 @@ bool Player::GetDeadState()
 
 	return false;
 }
+
+int Player::GetScore()
+{
+	return _score;
+}
+
