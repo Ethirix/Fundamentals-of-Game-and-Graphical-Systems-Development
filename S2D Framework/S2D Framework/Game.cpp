@@ -6,7 +6,8 @@
 #include "Enemy.h"
 
 TheGame::TheGame(int argc, char* argv[]) : Game(argc, argv) 
-{														//32x24 for 32x32 sized game
+{
+	S2D::Audio::Initialise();								//32x24 for 32x32 sized game
 	S2D::Graphics::Initialise(argc, argv, this, 1024, 768, false, 25, 25, "Game", 60);
 	S2D::Input::Initialise();
 	S2D::Graphics::StartGameLoop();
