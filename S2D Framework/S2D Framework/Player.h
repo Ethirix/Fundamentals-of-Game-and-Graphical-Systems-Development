@@ -16,6 +16,7 @@ public:
 	void Update(int elapsedTime) override;
 	void OnCollision(GameObject* collidedObject) override;
 	bool GetDeadState();
+	int GetScore();
 	float MovementSpeed = 0;
 
 private:
@@ -29,6 +30,8 @@ private:
 	map<int, Animation*> _animations;
 	int _fireRate = 250;
 	int _timer = 0;
+	int _score = 0;
+
 	S2D::SoundEffect* _deadSFX = new S2D::SoundEffect(false, 1, 0.5);
 	S2D::SoundEffect* _shootSFX = new S2D::SoundEffect(false, 1, 1);
 };

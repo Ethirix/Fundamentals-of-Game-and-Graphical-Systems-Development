@@ -24,8 +24,6 @@ void TheGame::LoadContent()
 
 	GameManager::GameObjectManager.AddGameObject(pause);
 	GameManager::GameObjectManager.LoadGameObjectTextures();
-
-	//GameManager::GameObjectManager.GetGameObjectOfType<Player>()->ShootSFX->Load("Audio/shoot.wav");
 }
 
 void TheGame::Update(int elapsedTime)
@@ -83,7 +81,10 @@ void TheGame::Draw(int elapsedTime)
 #pragma region DrawString
 	Player* plr = GameManager::GameObjectManager.GetGameObjectOfType<Player>();
 	if (plr != nullptr)
+	{
 		DrawString("Player X: " + to_string(plr->Position->X) + " Y: " + to_string(plr->Position->Y), S2D::Vector2(10.0f, 25.0f), S2D::Color::White);
+		DrawString("Score: " + to_string(plr->GetScore()), S2D::Vector2(10, S2D::Graphics::GetViewportHeight() - 10), S2D::Color::White);
+	}
 
 	if (IsGamePaused && !plr->GetDeadState())
 	{
