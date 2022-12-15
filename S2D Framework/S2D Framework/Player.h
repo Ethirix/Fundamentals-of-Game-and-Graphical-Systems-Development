@@ -32,6 +32,9 @@ private:
 	int _timer = 0;
 	int _score = 0;
 
+	bool _hasBreakPower = false;
+
 	S2D::SoundEffect* _deadSFX = new S2D::SoundEffect(false, 1, 0.5);
 	S2D::SoundEffect* _shootSFX = new S2D::SoundEffect(false, 1, 1);
+	S2D::SoundEffect* _breakSFX = new S2D::SoundEffect(false, 1, 0.5);
 };

@@ -6,6 +6,7 @@
 #include "Enemy.h"
 #include "Bullet.h"
 #include "Collectible.h"
+#include "WallBreakingPowerup.h"
 
 Player::Player(float speed, S2D::Rect* srcRect, S2D::Vector2* position, int renderDepth, std::string textureKey)
 	: GameObject(), Collidable(this, false)
@@ -27,6 +28,7 @@ Player::Player(float speed, S2D::Rect* srcRect, S2D::Vector2* position, int rend
 
 	_deadSFX->Load("Audio/dead2.wav");
 	_shootSFX->Load("Audio/shoot2.wav");
+	_breakSFX->Load("Audio/walldestroy.wav");
 	//ANYTHING OVER 16B PCM DOESNT WORK BTW
 }
 
@@ -37,6 +39,7 @@ Player::~Player()
 	delete SourceRect;
 	delete _deadSFX;
 	delete _shootSFX;
+	delete _breakSFX;
 }
 
 void Player::Update(int elapsedTime)
@@ -191,8 +194,9 @@ void Player::OnCollision(GameObject* collidedObject)
 		Block* block = dynamic_cast<Block*>(collidedObject);
 		S2D::Input::KeyboardState* keyboardState = S2D::Input::Keyboard::GetState();
 
-		if (keyboardState->IsKeyDown(S2D::Input::Keys::E))
+		if (keyboardState->IsKeyDown(S2D::Input::Keys::E) && _hasBreakPower)
 		{
+			S2D::Audio::Play(_breakSFX);
 			GameManager::GameObjectManager.DestroyGameObject(block);
 		}
 	}
@@ -207,6 +211,10 @@ void Player::OnCollision(GameObject* collidedObject)
 	else if (dynamic_cast<Collectible*>(collidedObject))
 	{
 		_score += dynamic_cast<Collectible*>(collidedObject)->GetScore();
+	}
+	else if (dynamic_cast<WallBreakingPowerup*>(collidedObject))
+	{
+		_hasBreakPower = true;
 	}
 }
 
