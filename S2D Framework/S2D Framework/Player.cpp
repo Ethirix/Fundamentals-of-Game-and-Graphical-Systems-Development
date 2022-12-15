@@ -5,6 +5,8 @@
 #include "Block.h"
 #include "Enemy.h"
 #include "Bullet.h"
+#include "Collectible.h"
+#include "WallBreakingPowerup.h"
 
 Player::Player(float speed, S2D::Rect* srcRect, S2D::Vector2* position, int renderDepth, std::string textureKey)
 	: GameObject(), Collidable(this, false)
@@ -23,6 +25,11 @@ Player::Player(float speed, S2D::Rect* srcRect, S2D::Vector2* position, int rend
 
 	_renderDepth = renderDepth;
 	_textureKey = std::move(textureKey);
+
+	_deadSFX->Load("Audio/dead2.wav");
+	_shootSFX->Load("Audio/shoot2.wav");
+	_breakSFX->Load("Audio/walldestroy.wav");
+	//ANYTHING OVER 16B PCM DOESNT WORK BTW
 }
 
 Player::~Player()
@@ -30,6 +37,9 @@ Player::~Player()
 	delete Position;
 	delete Texture;
 	delete SourceRect;
+	delete _deadSFX;
+	delete _shootSFX;
+	delete _breakSFX;
 }
 
 void Player::Update(int elapsedTime)
@@ -100,7 +110,7 @@ void Player::Update(int elapsedTime)
 	if (keyboardState->IsKeyDown(S2D::Input::Keys::SPACE) && _timer >= _fireRate)
 	{
 		Bullet* bullet = new Bullet(1.0f, currentDirection, new S2D::Rect(0, 0, 6, 6), new S2D::Vector2(Position->X + SourceRect->Width / 2, Position->Y + SourceRect->Height / 2), 1, "bullet");
-		//S2D::Audio::Play(ShootSFX);
+		S2D::Audio::Play(_shootSFX);
 		GameManager::GameObjectManager.AddGameObject(bullet);
 		GameManager::GameObjectManager.LoadGameObjectTexture(bullet);
 		_timer = 0;
@@ -184,15 +194,27 @@ void Player::OnCollision(GameObject* collidedObject)
 		Block* block = dynamic_cast<Block*>(collidedObject);
 		S2D::Input::KeyboardState* keyboardState = S2D::Input::Keyboard::GetState();
 
-		if (keyboardState->IsKeyDown(S2D::Input::Keys::E))
+		if (keyboardState->IsKeyDown(S2D::Input::Keys::E) && _hasBreakPower)
 		{
+			S2D::Audio::Play(_breakSFX);
 			GameManager::GameObjectManager.DestroyGameObject(block);
 		}
 	}
 	else if (dynamic_cast<Enemy*>(collidedObject))
 	{
-		if (!dynamic_cast<Enemy*>(collidedObject)->GetDeadStatus())
+		if (!dynamic_cast<Enemy*>(collidedObject)->GetDeadStatus() && !_dead)
+		{
 			_dead = true;
+			S2D::Audio::Play(_deadSFX);
+		}
+	}
+	else if (dynamic_cast<Collectible*>(collidedObject))
+	{
+		_score += dynamic_cast<Collectible*>(collidedObject)->GetScore();
+	}
+	else if (dynamic_cast<WallBreakingPowerup*>(collidedObject))
+	{
+		_hasBreakPower = true;
 	}
 }
 
@@ -203,3 +225,9 @@ bool Player::GetDeadState()
 
 	return false;
 }
+
+int Player::GetScore()
+{
+	return _score;
+}
+

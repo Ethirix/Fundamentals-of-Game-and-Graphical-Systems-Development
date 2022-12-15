@@ -88,6 +88,7 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Collectible.cpp" />
     <ClCompile Include="Collidable.cpp" />
     <ClCompile Include="Direction.cpp" />
     <ClCompile Include="Enemy.cpp" />
@@ -101,11 +102,13 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="RenderQueue.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="WallBreakingPowerup.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Collectible.h" />
     <ClInclude Include="Collidable.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
@@ -117,6 +120,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="RenderQueue.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="WallBreakingPowerup.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,6 +4,9 @@
 #include <filesystem>
 #include <fstream>
 
+#include "Collectible.h"
+#include "WallBreakingPowerup.h"
+
 void MapLoader::LoadMap()
 {
 	std::map<char, GameObject*> map = MapLoader::InitializeMap();
@@ -30,8 +33,7 @@ void MapLoader::LoadMap()
 						new S2D::Vector2(32 * i, 32 * lineNo), original.GetRenderDepth(), original.IsTrigger(), original.GetTextureKey());
 					GameManager::GameObjectManager.AddGameObject(block);
 				}
-
-				if (dynamic_cast<Player*>(map[line[i]]))
+				else if (dynamic_cast<Player*>(map[line[i]]))
 				{
 					Player original = *dynamic_cast<Player*>(map[line[i]]);
 					Player* plr = new Player(0.1f, new S2D::Rect(original.SourceRect->X, original.SourceRect->Y, original.SourceRect->Width, original.SourceRect->Height),
@@ -39,8 +41,7 @@ void MapLoader::LoadMap()
 
 					GameManager::GameObjectManager.AddGameObject(plr);
 				}
-				
-				if (dynamic_cast<Enemy*>(map[line[i]]))
+				else if (dynamic_cast<Enemy*>(map[line[i]]))
 				{
 					Enemy original = *dynamic_cast<Enemy*>(map[line[i]]);
 					Enemy* enemy = new Enemy(0.1f, new S2D::Rect(original.SourceRect->X, original.SourceRect->Y, original.SourceRect->Width, original.SourceRect->Height),
@@ -48,11 +49,26 @@ void MapLoader::LoadMap()
 					
 					GameManager::GameObjectManager.AddGameObject(enemy);
 				}
+				else if (dynamic_cast<Collectible*>(map[line[i]]))
+				{
+					Collectible original = *dynamic_cast<Collectible*>(map[line[i]]);
+					Collectible* collectible = new Collectible(25, new S2D::Rect(original.SourceRect->X, original.SourceRect->Y, original.SourceRect->Width, original.SourceRect->Height),
+						new S2D::Vector2(32 * i, 32 * lineNo), original.GetRenderDepth(), original.GetTextureKey());
+
+					GameManager::GameObjectManager.AddGameObject(collectible);
+				}
+				else if (dynamic_cast<WallBreakingPowerup*>(map[line[i]]))
+				{
+					WallBreakingPowerup original = *dynamic_cast<WallBreakingPowerup*>(map[line[i]]);
+					WallBreakingPowerup* powerup = new WallBreakingPowerup(new S2D::Rect(original.SourceRect->X, original.SourceRect->Y, original.SourceRect->Width, original.SourceRect->Height),
+						new S2D::Vector2(32 * i, 32 * lineNo), original.GetRenderDepth(), original.GetTextureKey());
+
+					GameManager::GameObjectManager.AddGameObject(powerup);	
+				}
 			}
 		}
 		file.close();
 	}
-	
 }
 
 std::map<char, GameObject*> MapLoader::InitializeMap()
@@ -61,5 +77,7 @@ std::map<char, GameObject*> MapLoader::InitializeMap()
 	map['B'] = new Block(new S2D::Rect(0, 0, 32, 32), new S2D::Vector2(0, 0), 2, false, "bigsquares");
 	map['P'] = new Player(0.1f, new S2D::Rect(0, 0, 12, 16), new S2D::Vector2(0, 0), 3, "player2x");
 	map['E'] = new Enemy(0.1f, new S2D::Rect(0, 0, 12*2, 16*2), new S2D::Vector2(0, 0), 3, "enemies");
+	map['C'] = new Collectible(25, new S2D::Rect(0, 0, 24, 32), new S2D::Vector2(0, 0), 2, "collectible");
+	map['D'] = new WallBreakingPowerup(new S2D::Rect(0, 0, 24, 32), new S2D::Vector2(0, 0), 2, "powerup");
 	return map;
 }
