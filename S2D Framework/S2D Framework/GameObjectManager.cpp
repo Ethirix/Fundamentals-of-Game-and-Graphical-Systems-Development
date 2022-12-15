@@ -10,11 +10,17 @@ GameObjectManager::GameObjectManager()
 
 
 GameObjectManager::~GameObjectManager()
-
 {
 	for (GameObject_P gO : _gameObjects)
 	{
 		delete gO;
+		gO = nullptr;
+	}
+
+	for (Collidable_P c : _collidables)
+	{
+		delete c;
+		c = nullptr;
 	}
 }
 
@@ -25,7 +31,7 @@ void GameObjectManager::DestroyGameObject(GameObject_P gO)
 
 void GameObjectManager::FlushGameObjects()
 {
-	for (auto gO : _objectsToFlush)
+	for (auto& gO : _objectsToFlush)
 	{
 		for (int i = 0; i < static_cast<int>(_gameObjects.size()); ++i)
 		{
@@ -33,7 +39,7 @@ void GameObjectManager::FlushGameObjects()
 				_gameObjects.erase(_gameObjects.begin() + i);
 		}
 
-		auto col = dynamic_cast<Collidable_P>(gO);
+ 		auto col = dynamic_cast<Collidable_P>(gO);
 
 		if (col)
 		{
@@ -45,7 +51,10 @@ void GameObjectManager::FlushGameObjects()
 		}
 
 		_renderQueue.Remove(gO);
+	}
 
+	for (auto& gO : _objectsToFlush)
+	{
 		delete gO;
 	}
 
