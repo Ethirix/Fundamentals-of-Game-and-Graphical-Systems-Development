@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Shape
+namespace Model
 {
 	struct Vertex2D
 	{

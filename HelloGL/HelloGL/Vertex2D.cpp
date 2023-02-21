@@ -1,6 +1,6 @@
 #include "Vertex2D.h"
 
-namespace Shape
+namespace Model
 {
 	Vertex2D::Vertex2D(float x, float y)
 	{

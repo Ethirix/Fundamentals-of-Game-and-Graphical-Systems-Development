@@ -3,7 +3,11 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include "GL\freeglut.h"
-#include "Shape.h"
+#include "Model.h"
+#include "SceneGraph.h"
+
+constexpr auto FRAME_TIME = 16;
+constexpr auto PI = 3.14159265358979323846;
 
 class HelloGL
 {
@@ -12,8 +16,17 @@ public:
 	~HelloGL(void);
 
 	void Display();
+	void Update();
 	void DrawPolygon();
 	
-	void DrawShape(Shape::Shape shape);
-	Shape::Shape CreateShape(int n, float angle = 0);
+	void DrawShape(Model::Model shape);
+	Model::Model CreateNGon(int n, float angle = 0);
+
+	void DrawModels();
+	void DrawChildren(Object& parent);
+	void DrawModel(Object& obj);
+
+private:
+	SceneGraph _sceneGraph;
+	float rotation;
 };

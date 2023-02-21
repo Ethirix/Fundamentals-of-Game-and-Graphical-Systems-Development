@@ -129,15 +129,21 @@
   <ItemGroup>
     <ClInclude Include="GLUTCallbacks.h" />
     <ClInclude Include="HelloGL.h" />
+    <ClInclude Include="Object.h" />
     <ClInclude Include="Polygon.h" />
-    <ClInclude Include="Shape.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="SceneGraph.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="Vertex2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GLUTCallbacks.cpp" />
     <ClCompile Include="HelloGL.cpp" />
+    <ClCompile Include="Object.cpp" />
     <ClCompile Include="Polygon.cpp" />
-    <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="SceneGraph.cpp" />
+    <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Vertex2D.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

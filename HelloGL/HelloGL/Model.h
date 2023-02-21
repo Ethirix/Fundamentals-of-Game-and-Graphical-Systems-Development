@@ -2,9 +2,9 @@
 #include <vector>
 #include "Polygon.h"
 
-namespace Shape
+namespace Model
 {
-	struct Shape
+	struct Model
 	{
 		std::vector<Polygon> Polygons;
 	};

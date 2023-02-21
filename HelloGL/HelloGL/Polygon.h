@@ -1,6 +1,6 @@
 #pragma once
 #include "Vertex2D.h"
-namespace Shape
+namespace Model
 {
 	struct Polygon
 	{

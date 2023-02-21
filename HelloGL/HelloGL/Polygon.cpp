@@ -1,6 +1,6 @@
 #include "Polygon.h"
 
-namespace Shape
+namespace Model
 {
 	Polygon::Polygon(Vertex2D a, Vertex2D b, Vertex2D c)
 	{

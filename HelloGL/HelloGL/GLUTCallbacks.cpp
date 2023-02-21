@@ -20,4 +20,10 @@ namespace GLUTCallbacks
 			helloGL->Display();
 		}
 	}
+
+	void Timer(int frameTime)
+	{
+		helloGL->Update();
+		glutTimerFunc(frameTime, Timer, frameTime);
+	}
 }
