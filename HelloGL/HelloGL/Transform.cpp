@@ -1,8 +1,7 @@
 #include "Transform.h"
 
-Transform::Transform(float x, float y, float z)
+Transform::Transform(Vector3 position, Vector3 rotation)
 {
-	X = x;
-	Y = y;
-	Z = z;
+	Position = position;
+	Rotation = rotation;
 }

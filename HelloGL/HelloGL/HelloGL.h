@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include <gl/GL.h>
 #include <gl/GLU.h>
-#include "GL\freeglut.h"
+#include "GL/freeglut.h"
 #include "Model.h"
 #include "SceneGraph.h"
 
@@ -19,14 +19,13 @@ public:
 	void Update();
 	void DrawPolygon();
 	
-	void DrawShape(Model::Model shape);
+	void DrawShape(const Model::Model& model);
 	Model::Model CreateNGon(int n, float angle = 0);
 
 	void DrawModels();
-	void DrawChildren(Object& parent);
-	void DrawModel(Object& obj);
+	void DrawChildren(Object& object, Transform parentTransform = Transform());
+	void DrawModel(Object& obj, Transform parentTransform = Transform());
 
 private:
 	SceneGraph _sceneGraph;
-	float rotation;
 };

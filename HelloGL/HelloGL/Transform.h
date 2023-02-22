@@ -1,11 +1,11 @@
 #pragma once
+#include "Vector3.h"
+
 class Transform
 {
 public:
-	Transform(float x = 0, float y = 0, float z = 0);
+	explicit Transform(Vector3 position = Vector3(), Vector3 rotation = Vector3());
 
-	float X = 0;
-	float Y = 0;
-	float Z = 0;
+	Vector3 Position;
+	Vector3 Rotation;
 };
-
