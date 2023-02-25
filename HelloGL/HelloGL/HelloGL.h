@@ -6,7 +6,7 @@
 #include "Model.h"
 #include "SceneGraph.h"
 
-constexpr auto FRAME_TIME = 16;
+constexpr auto FRAME_TIME = 14;
 constexpr auto PI = 3.14159265358979323846;
 
 class HelloGL
@@ -25,6 +25,7 @@ public:
 	void DrawModels();
 	void DrawChildren(Object& object, Transform parentTransform = Transform());
 	void DrawModel(Object& obj, Transform parentTransform = Transform());
+	void UpdateGlobalTransform(Object& obj, Transform parentTransform = Transform());
 
 private:
 	SceneGraph _sceneGraph;

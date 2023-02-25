@@ -22,8 +22,8 @@ HelloGL::HelloGL(int argc, char* argv[])
 	glutTimerFunc(FRAME_TIME, GLUTCallbacks::Timer, FRAME_TIME);
 
 	_sceneGraph.Objects.emplace_back(CreateNGon(8), ::Transform(Vector3(0.1, -0.5, 0)));
-	_sceneGraph.Objects[0].Children.emplace_back(CreateNGon(4), ::Transform(Vector3(-0.9, 0.5, 0)));
-	_sceneGraph.Objects[0].Children[0].Children.emplace_back(CreateNGon(6), ::Transform(Vector3(0.4, 0.2, 0.0), Vector3(45, 0, 0)));
+	_sceneGraph.Objects[0].Children.emplace_back(CreateNGon(6), ::Transform(Vector3(-0.9, 0.5, 0)));
+	_sceneGraph.Objects[0].Children[0].Children.emplace_back(CreateNGon(4), ::Transform(Vector3(0.4, 0.2, 0.0), Vector3(45, 0, 0)));
 	glutMainLoop();
 }
 
@@ -51,21 +51,14 @@ void HelloGL::DrawModels()
 
 void HelloGL::DrawChildren(Object& object, Transform parentTransform)
 {
+	
+
+	UpdateGlobalTransform(object, parentTransform);
 	DrawModel(object, parentTransform);
+
 	for (Object& child : object.Children)
 	{
-		//TODO: Figure out a far better way of writing this. -Possibly ask Peter or Craig about Overloading Operators...
-		Transform t = Transform();
-		t.Position.X = object.Transform.Position.X + parentTransform.Position.X;
-		t.Position.Y = object.Transform.Position.Y + parentTransform.Position.Y;
-		t.Position.Z = object.Transform.Position.Z + parentTransform.Position.Z;
-
-		t.Rotation.X = object.Transform.Rotation.X + parentTransform.Rotation.X;
-		t.Rotation.Y = object.Transform.Rotation.Y + parentTransform.Rotation.Y;
-		t.Rotation.Z = object.Transform.Rotation.Z + parentTransform.Rotation.Z;
-		//--------------------------------------------------------------------------------------------------------------
-
-		DrawChildren(child, t);
+		DrawChildren(child, object.Transform);
 	}
 }
 
@@ -75,15 +68,18 @@ void HelloGL::DrawModel(Object& obj, Transform parentTransform)
 
 	//TODO: Figure out how to rotate Objects around a point, using Parent-Child Relationship...
 
-	glRotatef(parentTransform.Rotation.X, parentTransform.Position.X + 1, 0, 0);
-	glRotatef(parentTransform.Rotation.Y, 0, parentTransform.Position.Y + 1, 0);
-	glRotatef(parentTransform.Rotation.Z, 0, 0, parentTransform.Position.Z + 1);
+	glTranslatef(parentTransform.GlobalPosition.X,
+	             parentTransform.GlobalPosition.Y,
+	             parentTransform.GlobalPosition.Z);
 
-	glTranslatef(parentTransform.Position.X + obj.Transform.Position.X,
-	             parentTransform.Position.Y + obj.Transform.Position.Y,
-	             parentTransform.Position.Z + obj.Transform.Position.Z);
+	glRotatef(parentTransform.GlobalRotation.X, 1, 0, 0);
+	glRotatef(parentTransform.GlobalRotation.Y, 0, 1, 0);
+	glRotatef(parentTransform.GlobalRotation.Z, 0, 0, 1);
 
-	//local rotation?
+	glTranslatef(obj.Transform.GlobalPosition.X,
+	             obj.Transform.GlobalPosition.Y,
+	             obj.Transform.GlobalPosition.Z);
+
 	glRotatef(obj.Transform.Rotation.X, 1, 0, 0);
 	glRotatef(obj.Transform.Rotation.Y, 0, 1, 0);
 	glRotatef(obj.Transform.Rotation.Z, 0, 0, 1);
@@ -92,6 +88,17 @@ void HelloGL::DrawModel(Object& obj, Transform parentTransform)
 
 	DrawShape(obj.Model);
 	glPopMatrix();
+}
+
+void HelloGL::UpdateGlobalTransform(Object& obj, Transform parentTransform)
+{
+	obj.Transform.GlobalPosition.X = parentTransform.GlobalPosition.X + obj.Transform.Position.X;
+	obj.Transform.GlobalPosition.Y = parentTransform.GlobalPosition.Y + obj.Transform.Position.Y;
+	obj.Transform.GlobalPosition.Z = parentTransform.GlobalPosition.Z + obj.Transform.Position.Z;
+
+	obj.Transform.GlobalRotation.X = parentTransform.GlobalRotation.X + obj.Transform.Rotation.X;
+	obj.Transform.GlobalRotation.Y = parentTransform.GlobalRotation.Y + obj.Transform.Rotation.Y;
+	obj.Transform.GlobalRotation.Z = parentTransform.GlobalRotation.Z + obj.Transform.Rotation.Z;
 }
 
 

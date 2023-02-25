@@ -8,4 +8,7 @@ public:
 
 	Vector3 Position;
 	Vector3 Rotation;
+
+	Vector3 GlobalPosition = Vector3();
+	Vector3 GlobalRotation = Vector3();
 };
