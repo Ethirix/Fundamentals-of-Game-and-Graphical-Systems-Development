@@ -8,4 +8,7 @@ public:
 	float X;
 	float Y;
 	float Z;
+
+	Vector3 operator+ (const Vector3& rhs);
+	Vector3 operator- (const Vector3& rhs);
 };
