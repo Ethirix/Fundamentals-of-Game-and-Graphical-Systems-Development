@@ -6,7 +6,7 @@
 class Object
 {
 public:
-	Object(Model::Model model, Transform transform = ::Transform());
+	explicit Object(Model::Model model, Transform transform = ::Transform());
 
 	std::string Name;
 	Transform Transform;
