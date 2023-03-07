@@ -6,8 +6,8 @@
 #include "Model.h"
 #include "SceneGraph.h"
 
-constexpr auto FRAME_TIME = 14;
-constexpr auto PI = 3.14159265358979323846;
+constexpr int FRAME_TIME = 14;
+constexpr double PI = 3.141592653589793;
 
 class HelloGL
 {
@@ -23,9 +23,8 @@ public:
 	Model::Model CreateNGon(int n, float angle = 0);
 
 	void DrawModels();
-	void DrawChildren(Object& object, Transform parentTransform = Transform());
-	void DrawModel(Object& obj, Transform parentTransform = Transform());
-	void UpdateGlobalTransform(Object& obj, Transform parentTransform = Transform());
+	void DrawChildren(Object& object);
+	void DrawModel(Object& obj);
 
 private:
 	SceneGraph _sceneGraph;

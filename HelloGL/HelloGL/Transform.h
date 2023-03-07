@@ -1,19 +1,11 @@
 #pragma once
 #include "Vector3.h"
-#include "Matrix4x4.h"
 
 class Transform
 {
 public:
-	explicit Transform(Vector4 position = Vector4(), Vector4 rotation = Vector4());
+	explicit Transform(Vector3 position = Vector3(), Vector3 rotation = Vector3());
 
-	Vector4 Position;
-	Vector4 Rotation;
-
-	Matrix4x4 TranslationMatrix;
-	Matrix4x4 RotationMatrix;
-	Matrix4x4 ScaleMatrix;
-
-	Vector4 GlobalPosition = Vector4();
-	Vector4 GlobalRotation = Vector4();
+	Vector3 Position;
+	Vector3 Rotation;
 };

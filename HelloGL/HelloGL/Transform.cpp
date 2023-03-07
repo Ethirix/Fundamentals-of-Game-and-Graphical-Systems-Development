@@ -1,6 +1,6 @@
 #include "Transform.h"
 
-Transform::Transform(Vector4 position, Vector4 rotation)
+Transform::Transform(Vector3 position, Vector3 rotation)
 {
 	Position = position;
 	Rotation = rotation;
