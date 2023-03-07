@@ -14,12 +14,22 @@ HelloGL::HelloGL(int argc, char* argv[])
 	GLUTCallbacks::Init(this);
 	glutInit(&argc, argv);
 
+	glutInitDisplayMode(GLUT_DOUBLE);
 	glutInitWindowSize(800, 800);
 
 	glutCreateWindow("First OpenGL Program");
-	glutDisplayFunc(GLUTCallbacks::Display);
 
+	glutDisplayFunc(GLUTCallbacks::Display);
 	glutTimerFunc(FRAME_TIME, GLUTCallbacks::Timer, FRAME_TIME);
+
+	glutKeyboardFunc(GLUTCallbacks::KeyboardDown);
+	glutKeyboardUpFunc(GLUTCallbacks::KeyboardUp);
+	glutSpecialFunc(GLUTCallbacks::KeyboardSpecialDown);
+	glutSpecialUpFunc(GLUTCallbacks::KeyboardSpecialUp);
+
+	glutMouseFunc(GLUTCallbacks::Mouse);
+	glutMotionFunc(GLUTCallbacks::MouseMotion);
+	glutPassiveMotionFunc(GLUTCallbacks::MousePassiveMotion);
 
 	_sceneGraph.Objects.emplace_back(CreateNGon(8), ::Transform(Vector3(0.0, 0.0, 0)));
 	_sceneGraph.Objects[0].Children.emplace_back(CreateNGon(6), ::Transform(Vector3(-0.5f, 0.5, 0)));
@@ -32,16 +42,39 @@ HelloGL::~HelloGL(void)
 {
 }
 
+void HelloGL::Update()
+{
+	glutPostRedisplay();
+}
+
 void HelloGL::Display()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	_sceneGraph.Objects[0].Transform.Rotation.Z += 0.25f;
-	_sceneGraph.Objects[0].Children[0].Transform.Rotation.Z += 0.5f;
-
 	DrawModels();
 
 	glFlush();
+	glutSwapBuffers();
+}
+
+void HelloGL::Keyboard(Keys::Keys key, KeyState::KeyState state, int x, int y)
+{
+	if (key == Keys::d && state == KeyState::DOWN)
+	{
+		_sceneGraph.Objects[0].Transform.Rotation.Z += 1.0f;
+	}
+	if (key == Keys::a && state == KeyState::DOWN)
+	{
+		_sceneGraph.Objects[0].Transform.Rotation.Z -= 1.0f;
+	}
+	if (key == Keys::w && state == KeyState::DOWN)
+	{
+		_sceneGraph.Objects[0].Transform.Rotation.X += 1.0f;
+	}
+	if (key == Keys::s && state == KeyState::DOWN)
+	{
+		_sceneGraph.Objects[0].Transform.Rotation.X -= 1.0f;
+	}
 }
 
 void HelloGL::DrawModels()
@@ -166,9 +199,4 @@ Model::Model HelloGL::CreateNGon(int n, float angle)
 	}
 
 	return shape;
-}
-
-void HelloGL::Update()
-{
-	glutPostRedisplay();
 }
