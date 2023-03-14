@@ -4,6 +4,7 @@
 #include <gl/GLU.h>
 
 #include "InputEnums.h"
+#include "InputManager.h"
 #include "GL/freeglut.h"
 #include "Model.h"
 #include "SceneGraph.h"
@@ -19,10 +20,8 @@ public:
 
 	void Display();
 	void Update();
-	void DrawPolygon();
 
-	void Keyboard(Keys::Keys key, KeyState::KeyState state, int x, int y);
-
+	void Keyboard();
 
 	void DrawShape(const Model::Model& model);
 	Model::Model CreateNGon(int n, float angle = 0);
@@ -31,6 +30,7 @@ public:
 	void DrawChildren(Object& object);
 	void DrawModel(Object& obj);
 
+	InputManager InputManager{};
 private:
 	SceneGraph _sceneGraph;
 };

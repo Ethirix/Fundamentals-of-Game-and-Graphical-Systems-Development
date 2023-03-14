@@ -2,7 +2,7 @@
 
 namespace Keys
 {
-	enum Keys
+	enum class Keys
 	{
 		NONE = 0,
 		BACKSPACE = 8,
@@ -74,37 +74,16 @@ namespace Keys
 		CARET = 94,
 		UNDERSCORE = 95,
 		GRAVE = 96,
-		a = 97,
-		b = 98,
-		c = 99,
-		d = 100,
-		e = 101,
-		f = 102,
-		g = 103,
-		h = 104,
-		i = 105,
-		j = 106,
-		k = 107,
-		l = 108,
-		m = 109,
-		n = 110,
-		o = 111,
-		p = 112,
-		q = 113,
-		r = 114,
-		s = 115,
-		t = 116,
-		u = 117,
-		v = 118,
-		w = 119,
-		x = 120,
-		y = 121,
-		z = 122,
+		//Where lower-case characters should be
 		LEFT_BRACE = 123,
 		PIPE = 124,
 		RIGHT_BRACE = 125,
 		TILDE = 126,
-		DEL = 127,
+		DEL = 127
+	};
+
+	enum class SpecialKeys
+	{
 		F1,
 		F2,
 		F3,
@@ -130,80 +109,95 @@ namespace Keys
 		RIGHT_SHIFT,
 		LEFT_CONTROL,
 		RIGHT_CONTROL,
-		LEFT_ALT
+		LEFT_ALT,
+		NONE
 	};
 
-	inline Keys GetSpecialKeyFromInt(const int key)
+	enum class MouseKeys
+	{
+		LEFT_MOUSE = 0,
+		MIDDLE_MOUSE = 1,
+		RIGHT_MOUSE = 2,
+		NONE
+	};
+
+	enum class MouseMovement
+	{
+		NONE,
+		PASSIVE,
+		BUTTON_DOWN
+	};
+
+	inline SpecialKeys CastToSpecialKey(const int key)
 	{
 		switch (key)
 		{
 		case 1:
-			return F1;
+			return SpecialKeys::F1;
 		case 2:
-			return F2;
+			return SpecialKeys::F2;
 		case 3:
-			return F3;
+			return SpecialKeys::F3;
 		case 4:
-			return F4;
+			return SpecialKeys::F4;
 		case 5:
-			return F5;
+			return SpecialKeys::F5;
 		case 6:
-			return F6;
+			return SpecialKeys::F6;
 		case 7:
-			return F7;
+			return SpecialKeys::F7;
 		case 8:
-			return F8;
+			return SpecialKeys::F8;
 		case 9:
-			return F9;
+			return SpecialKeys::F9;
 		case 10:
-			return F10;
+			return SpecialKeys::F10;
 		case 11:
-			return F11;
+			return SpecialKeys::F11;
 		case 12:
-			return F12;
+			return SpecialKeys::F12;
 		case 100:
-			return LEFT_ARROW;
+			return SpecialKeys::LEFT_ARROW;
 		case 101:
-			return UP_ARROW;
+			return SpecialKeys::UP_ARROW;
 		case 102:
-			return RIGHT_ARROW;
+			return SpecialKeys::RIGHT_ARROW;
 		case 103:
-			return DOWN_ARROW;
+			return SpecialKeys::DOWN_ARROW;
 		case 104:
-			return PAGE_UP;
+			return SpecialKeys::PAGE_UP;
 		case 105:
-			return PAGE_DOWN;
+			return SpecialKeys::PAGE_DOWN;
 		case 106:
-			return HOME;
+			return SpecialKeys::HOME;
 		case 108:
-			return INSERT;
+			return SpecialKeys::INSERT;
 		case 112:
-			return LEFT_SHIFT;
+			return SpecialKeys::LEFT_SHIFT;
 		case 113:
-			return RIGHT_SHIFT;
+			return SpecialKeys::RIGHT_SHIFT;
 		case 114:
-			return LEFT_CONTROL;
+			return SpecialKeys::LEFT_CONTROL;
 		case 115:
-			return RIGHT_CONTROL;
+			return SpecialKeys::RIGHT_CONTROL;
 		case 116:
-			return LEFT_ALT;
+			return SpecialKeys::LEFT_ALT;
 		default:
-			return NONE;
+			return SpecialKeys::NONE;
 		}
 	}
 
 	inline Keys CastToKey(unsigned char key)
 	{
+		if (key >= 97 && key <= 122)
+		{
+			key -= 32;
+		}
 		return static_cast<Keys>(key);
 	}
-}
 
-namespace KeyState
-{
-	enum KeyState
+	inline MouseKeys CastToMouseButton(const int key)
 	{
-		NONE,
-		DOWN,
-		UP
-	};
+		return static_cast<MouseKeys>(key);
+	}
 }

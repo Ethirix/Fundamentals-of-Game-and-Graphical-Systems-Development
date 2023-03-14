@@ -44,6 +44,7 @@ HelloGL::~HelloGL(void)
 
 void HelloGL::Update()
 {
+	Keyboard();
 	glutPostRedisplay();
 }
 
@@ -57,21 +58,21 @@ void HelloGL::Display()
 	glutSwapBuffers();
 }
 
-void HelloGL::Keyboard(Keys::Keys key, KeyState::KeyState state, int x, int y)
+void HelloGL::Keyboard()
 {
-	if (key == Keys::d && state == KeyState::DOWN)
+	if (InputManager.IsKeyDown(Keys::Keys::D))
 	{
 		_sceneGraph.Objects[0].Transform.Rotation.Z += 1.0f;
 	}
-	if (key == Keys::a && state == KeyState::DOWN)
+	if (InputManager.IsKeyDown(Keys::Keys::A))
 	{
 		_sceneGraph.Objects[0].Transform.Rotation.Z -= 1.0f;
 	}
-	if (key == Keys::w && state == KeyState::DOWN)
+	if (InputManager.IsKeyDown(Keys::Keys::W))
 	{
 		_sceneGraph.Objects[0].Transform.Rotation.X += 1.0f;
 	}
-	if (key == Keys::s && state == KeyState::DOWN)
+	if (InputManager.IsKeyDown(Keys::Keys::S))
 	{
 		_sceneGraph.Objects[0].Transform.Rotation.X -= 1.0f;
 	}
@@ -111,62 +112,6 @@ void HelloGL::DrawModel(Object& obj)
 	DrawShape(obj.Model);
 }
 
-void HelloGL::DrawPolygon()
-{
-#pragma region Shapes
-	Model::Model scalene = Model::Model();
-	scalene.Polygons.emplace_back(
-		Model::Vertex2D(-0.9f, 0.9f),
-			Model::Vertex2D(-0.85f, 1.0f),
-			Model::Vertex2D(-0.75f, 0.9f)
-
-	);
-
-	Model::Model isosceles = Model::Model();
-	isosceles.Polygons.emplace_back(
-		Model::Vertex2D(-0.75f, 0.8f),
-			Model::Vertex2D(-0.7f, 1.0f),
-			Model::Vertex2D(-0.65f, 0.8f)
-
-	);
-
-	Model::Model equilateral = Model::Model();
-	equilateral.Polygons.emplace_back(
-		Model::Vertex2D(-0.65f, 0.7f),
-			Model::Vertex2D(-0.45f, 1.0f),
-			Model::Vertex2D(-0.25f, 0.7f)
-
-	);
-
-	Model::Model acute = Model::Model();
-	acute.Polygons.emplace_back(
-		Model::Vertex2D(-0.25, 0.9),
-			Model::Vertex2D(-0.225, 1.0),
-			Model::Vertex2D(-0.15, 0.9)
-
-	);
-
-	Model::Model rightangle = Model::Model();
-	rightangle.Polygons.emplace_back(
-		Model::Vertex2D(-1.0f, 1.0f),
-			Model::Vertex2D(-1.0f, 0.9f),
-			Model::Vertex2D(-0.9f, 0.9f)
-
-	);
-
-	Model::Model obtuse = Model::Model();
-	obtuse.Polygons.emplace_back(
-		Model::Vertex2D(-0.15f, 1.0f),
-			Model::Vertex2D(-0.05f, 0.8f),
-			Model::Vertex2D(-0.2f, 0.8f)
-
-	);
-#pragma endregion
-
-	Model::Model ngon = CreateNGon(10, 360.0f / 16.0f * (PI / 180.0f));
-	DrawShape(ngon);
-}
-
 void HelloGL::DrawShape(const Model::Model& model)
 {
 	for (Model::Polygon const &p : model.Polygons)
@@ -182,7 +127,7 @@ void HelloGL::DrawShape(const Model::Model& model)
 
 Model::Model HelloGL::CreateNGon(int n, float angle)
 {
-	float angleIncrease = 2.0f * PI / n;
+	float angleIncrease = 2.0 * PI / n;
 
 	Model::Model shape;
 
