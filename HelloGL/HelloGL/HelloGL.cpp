@@ -31,39 +31,6 @@ HelloGL::HelloGL(int argc, char* argv[])
 	glutMotionFunc(GLUTCallbacks::MouseMotion);
 	glutPassiveMotionFunc(GLUTCallbacks::MousePassiveMotion);
 
-
-	for (int i = 0; i < 200; i++)
-	{
-		_sceneGraph.Objects.emplace_back(
-			Model(
-				{
-					Vector3(1, 1, 1), Vector3(-1, 1, 1),
-					Vector3(-1, -1, 1), Vector3(1, -1, 1),
-					Vector3(1, -1, -1), Vector3(1, 1, -1),
-					Vector3(-1, 1, -1), Vector3(-1, -1, -1)
-				},
-				{
-					Vector3(1, 1, 1), Vector3(1, 1, 0),
-					Vector3(1, 0, 0), Vector3(1, 0, 1),
-					Vector3(0, 0, 1), Vector3(0, 1, 1),
-					Vector3(0, 1, 0), Vector3(0, 0, 0)
-				},
-				{
-					0, 1, 2, 2, 3, 0,
-					0, 3, 4, 4, 5, 0,
-					0, 5, 6, 6, 1, 0,
-					1, 6, 7, 7, 2, 1,
-					7, 4, 3, 3, 2, 7,
-					4, 7, 6, 6, 5, 4
-				}
-			),
-			Transform(
-				Vector3(rand() % 400 / 10.0f - 20, rand() % 400 / 10.0f - 20, rand() % 400 / 10.0f - 20),
-				Vector3(rand() % 360, rand() % 360, rand() % 360)
-			)
-		);
-	}
-
 	Camera = new ::Camera();
 
 	glEnable(GL_CULL_FACE);
@@ -74,8 +41,10 @@ HelloGL::HelloGL(int argc, char* argv[])
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glViewport(0, 0, 800, 800);
-	gluPerspective(75, 1, 0.1f, 1000);
+	gluPerspective(75, 1, 0.1, 1000);
 	glMatrixMode(GL_MODELVIEW);
+
+	_sceneGraph.Objects.emplace_back(Model("Models/cube.txt"));
 
 	glutMainLoop();
 }
@@ -203,13 +172,10 @@ void HelloGL::DrawObject(Model& model)
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, model.GetArrayOfIndexedVertices().first);
-	glColorPointer(3, GL_FLOAT, 0, model.GetArrayOfIndexedColors().first);
-	auto indices = model.GetArrayOfIndices();
+	glVertexPointer(3, GL_FLOAT, 0, model.IndexedVertices.first);
+	glColorPointer(3, GL_FLOAT, 0, model.IndexedColors.first);
 
-
-	glDrawElements(GL_TRIANGLES, indices.second, GL_UNSIGNED_SHORT, indices.first);
-
+	glDrawElements(GL_TRIANGLES, model.Indices.second, GL_UNSIGNED_SHORT, model.Indices.first);
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
