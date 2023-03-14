@@ -6,7 +6,7 @@ namespace Model
 	{
 		Polygon(Vertex2D a, Vertex2D b, Vertex2D c);
 
-		Vertex2D Vertices[3];
+		Vertex2D Vertices[3]{};
 	};
 }
 

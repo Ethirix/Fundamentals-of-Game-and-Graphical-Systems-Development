@@ -14,7 +14,7 @@ HelloGL::HelloGL(int argc, char* argv[])
 	GLUTCallbacks::Init(this);
 	glutInit(&argc, argv);
 
-	glutInitDisplayMode(GLUT_DOUBLE);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(800, 800);
 
 	glutCreateWindow("First OpenGL Program");
@@ -31,34 +31,84 @@ HelloGL::HelloGL(int argc, char* argv[])
 	glutMotionFunc(GLUTCallbacks::MouseMotion);
 	glutPassiveMotionFunc(GLUTCallbacks::MousePassiveMotion);
 
-	_sceneGraph.Objects.emplace_back(CreateNGon(8), ::Transform(Vector3(0.0, 0.0, 0)));
-	_sceneGraph.Objects[0].Children.emplace_back(CreateNGon(6), ::Transform(Vector3(-0.5f, 0.5, 0)));
-	_sceneGraph.Objects[0].Children[0].Children.emplace_back(CreateNGon(4), ::Transform(Vector3(0.4f, 0.2f, 0.0)));
+
+	for (int i = 0; i < 200; i++)
+	{
+		_sceneGraph.Objects.emplace_back(
+			Model(
+				{
+					Vector3(1, 1, 1), Vector3(-1, 1, 1),
+					Vector3(-1, -1, 1), Vector3(1, -1, 1),
+					Vector3(1, -1, -1), Vector3(1, 1, -1),
+					Vector3(-1, 1, -1), Vector3(-1, -1, -1)
+				},
+				{
+					Vector3(1, 1, 1), Vector3(1, 1, 0),
+					Vector3(1, 0, 0), Vector3(1, 0, 1),
+					Vector3(0, 0, 1), Vector3(0, 1, 1),
+					Vector3(0, 1, 0), Vector3(0, 0, 0)
+				},
+				{
+					0, 1, 2, 2, 3, 0,
+					0, 3, 4, 4, 5, 0,
+					0, 5, 6, 6, 1, 0,
+					1, 6, 7, 7, 2, 1,
+					7, 4, 3, 3, 2, 7,
+					4, 7, 6, 6, 5, 4
+				}
+			),
+			Transform(
+				Vector3(rand() % 400 / 10.0f - 20, rand() % 400 / 10.0f - 20, rand() % 400 / 10.0f - 20),
+				Vector3(rand() % 360, rand() % 360, rand() % 360)
+			)
+		);
+	}
+
+	Camera = new ::Camera();
+
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
+	glEnable(GL_DEPTH_TEST);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glViewport(0, 0, 800, 800);
+	gluPerspective(75, 1, 0.1f, 1000);
+	glMatrixMode(GL_MODELVIEW);
 
 	glutMainLoop();
 }
 
-HelloGL::~HelloGL(void)
+HelloGL::~HelloGL()
 {
+	delete Camera;
+	Camera = nullptr;
 }
 
 void HelloGL::Update()
 {
-	Keyboard();
+	glLoadIdentity();
+	gluLookAt(Camera->Eye.X, Camera->Eye.Y, Camera->Eye.Z,
+		Camera->Center.X, Camera->Center.Y, Camera->Center.Z,
+	          Camera->Up.X, Camera->Up.Y, Camera->Up.Z);
+
+	CheckKeyboardInputs();
+
 	glutPostRedisplay();
 }
 
 void HelloGL::Display()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	DrawModels();
+	DrawFrame();
 
 	glFlush();
 	glutSwapBuffers();
 }
 
-void HelloGL::Keyboard()
+void HelloGL::CheckKeyboardInputs()
 {
 	if (InputManager.IsKeyDown(Keys::Keys::D))
 	{
@@ -76,30 +126,69 @@ void HelloGL::Keyboard()
 	{
 		_sceneGraph.Objects[0].Transform.Rotation.X -= 1.0f;
 	}
-}
-
-void HelloGL::DrawModels()
-{
-	for (Object& object : _sceneGraph.Objects)
+	if (InputManager.IsKeyDown(Keys::Keys::Q))
 	{
-				
-		DrawChildren(object);
+		_sceneGraph.Objects[0].Transform.Rotation.Y -= 1.0f;
+	}
+	if (InputManager.IsKeyDown(Keys::Keys::E))
+	{
+		_sceneGraph.Objects[0].Transform.Rotation.Y += 1.0f;
+	}
+
+	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::RIGHT_ARROW))
+	{
+		Camera->Center.X += 0.05f;
+		Camera->Eye.X += 0.05f;
+	}
+	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::LEFT_ARROW))
+	{
+		Camera->Eye.X -= 0.05f;
+		Camera->Center.X -= 0.05f;
+	}
+	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::DOWN_ARROW))
+	{
+		Camera->Eye.Z += 0.05f;
+		Camera->Center.Z += 0.05f;
+	}
+	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::UP_ARROW))
+	{
+		Camera->Eye.Z -= 0.05f;
+		Camera->Center.Z -= 0.05f;
+	}
+	if (InputManager.IsKeyDown(Keys::Keys::SPACE))
+	{
+		Camera->Eye.Y += 0.05f;
+		Camera->Center.Y += 0.05f;
+	}
+	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::LEFT_CONTROL))
+	{
+		Camera->Eye.Y -= 0.05f;
+		Camera->Center.Y -= 0.05f;
 	}
 }
 
-void HelloGL::DrawChildren(Object& object)
+void HelloGL::DrawFrame()
+{
+	for (Object& object : _sceneGraph.Objects)
+	{
+		TraverseSceneGraphChildren(object);
+	}
+}
+
+void HelloGL::TraverseSceneGraphChildren(Object& object)
 {
 	glPushMatrix();
-	DrawModel(object);
+	UpdateObjectMatrix(object);
+	DrawObject(object.Model);
 
 	for (Object& child : object.Children)
 	{
-		DrawChildren(child);
+		TraverseSceneGraphChildren(child);
 	}
 	glPopMatrix();
 }
 
-void HelloGL::DrawModel(Object& obj)
+void HelloGL::UpdateObjectMatrix(Object& obj)
 {
 	glTranslatef(obj.Transform.Position.X,
 		obj.Transform.Position.Y,
@@ -107,41 +196,21 @@ void HelloGL::DrawModel(Object& obj)
 
 	glRotatef(obj.Transform.Rotation.X, 1, 0, 0);
 	glRotatef(obj.Transform.Rotation.Y, 0, 1, 0);
-	glRotatef(obj.Transform.Rotation.Z, 0, 0, 1);
-
-	DrawShape(obj.Model);
+	glRotatef(obj.Transform.Rotation.Z, 0, 0, -1);
 }
 
-void HelloGL::DrawShape(const Model::Model& model)
+void HelloGL::DrawObject(Model& model)
 {
-	for (Model::Polygon const &p : model.Polygons)
-	{
-		glBegin(GL_POLYGON);
-		for (Model::Vertex2D vertex : p.Vertices)
-		{
-			glVertex2f(vertex.X, vertex.Y);
-		}
-		glEnd();
-	}
-}
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glVertexPointer(3, GL_FLOAT, 0, model.GetArrayOfIndexedVertices().first);
+	glColorPointer(3, GL_FLOAT, 0, model.GetArrayOfIndexedColors().first);
+	auto indices = model.GetArrayOfIndices();
 
-Model::Model HelloGL::CreateNGon(int n, float angle)
-{
-	float angleIncrease = 2.0 * PI / n;
 
-	Model::Model shape;
+	glDrawElements(GL_TRIANGLES, indices.second, GL_UNSIGNED_SHORT, indices.first);
 
-	for (int i = 0; i < n; i++)
-	{
-		shape.Polygons.emplace_back(
-			Model::Vertex2D(0, 0),
-			Model::Vertex2D(0.2f * std::cos(angle), 0.2f * std::sin(angle)),
-			Model::Vertex2D(0.2f * std::cos(angle + angleIncrease), 
-				0.2f * std::sin(angle + angleIncrease))
-		);
-		angle += angleIncrease;
-		
-	}
 
-	return shape;
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
 }

@@ -3,7 +3,7 @@
 class Vector2
 {
 public:
-	explicit Vector2(int x = 0, int y = 0);
+	explicit Vector2(int x, int y);
 	explicit Vector2(float x = 0, float y = 0);
 
 	float X;

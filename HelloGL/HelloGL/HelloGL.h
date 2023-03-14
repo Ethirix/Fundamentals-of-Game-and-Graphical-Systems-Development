@@ -3,7 +3,7 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
-#include "InputEnums.h"
+#include "Camera.h"
 #include "InputManager.h"
 #include "GL/freeglut.h"
 #include "Model.h"
@@ -16,21 +16,21 @@ class HelloGL
 {
 public:
 	HelloGL(int argc, char* argv[]);
-	~HelloGL(void);
+	~HelloGL();
 
 	void Display();
 	void Update();
 
-	void Keyboard();
+	void CheckKeyboardInputs();
 
-	void DrawShape(const Model::Model& model);
-	Model::Model CreateNGon(int n, float angle = 0);
+	void DrawObject(Model& model);
 
-	void DrawModels();
-	void DrawChildren(Object& object);
-	void DrawModel(Object& obj);
+	void DrawFrame();
+	void TraverseSceneGraphChildren(Object& object);
+	void UpdateObjectMatrix(Object& obj);
 
-	InputManager InputManager{};
+	InputManager InputManager;
+	Camera* Camera;
 private:
 	SceneGraph _sceneGraph;
 };
