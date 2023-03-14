@@ -113,7 +113,7 @@ namespace Keys
 		NONE
 	};
 
-	enum class MouseKeys
+	enum class MouseButtons
 	{
 		LEFT_MOUSE = 0,
 		MIDDLE_MOUSE = 1,
@@ -196,8 +196,8 @@ namespace Keys
 		return static_cast<Keys>(key);
 	}
 
-	inline MouseKeys CastToMouseButton(const int key)
+	inline MouseButtons CastToMouseButton(const int key)
 	{
-		return static_cast<MouseKeys>(key);
+		return static_cast<MouseButtons>(key);
 	}
 }

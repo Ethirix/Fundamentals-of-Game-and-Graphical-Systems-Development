@@ -43,16 +43,16 @@ void InputManager::SetSpecialKeyUp(Keys::SpecialKeys key)
 	}
 }
 
-void InputManager::SetMouseButtonDown(Keys::MouseKeys key)
+void InputManager::SetMouseButtonDown(Keys::MouseButtons key)
 {
 	if (std::any_of(_mouseButtonsDown.begin(), _mouseButtonsDown.end(),
-		[key](Keys::MouseKeys k) { return key == k; }))
+		[key](Keys::MouseButtons k) { return key == k; }))
 		return;
 
 	_mouseButtonsDown.emplace_back(key);
 }
 
-void InputManager::SetMouseButtonUp(Keys::MouseKeys key)
+void InputManager::SetMouseButtonUp(Keys::MouseButtons key)
 {
 	for(unsigned int i = 0; i < _mouseButtonsDown.size(); i++)
 	{
@@ -86,10 +86,10 @@ bool InputManager::IsSpecialKeyDown(Keys::SpecialKeys key)
 		[key](Keys::SpecialKeys k){ return key == k; });
 }
 
-bool InputManager::IsMouseButtonDown(Keys::MouseKeys key)
+bool InputManager::IsMouseButtonDown(Keys::MouseButtons key)
 {
 	return std::any_of(_mouseButtonsDown.begin(), _mouseButtonsDown.end(), 
-		[key](Keys::MouseKeys k){ return key == k; });
+		[key](Keys::MouseButtons k){ return key == k; });
 }
 
 Vector2 InputManager::GetCursorPosition()
