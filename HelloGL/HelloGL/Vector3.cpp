@@ -9,7 +9,7 @@ Vector3::Vector3(float x, float y, float z)
 
 Vector3 Vector3::operator+(const Vector3& rhs)
 {
-	Vector3 v3 = Vector3();
+	Vector3 v3;
 
 	v3.X = X + rhs.X;
 	v3.Y = Y + rhs.Y;
@@ -20,7 +20,7 @@ Vector3 Vector3::operator+(const Vector3& rhs)
 
 Vector3 Vector3::operator-(const Vector3& rhs)
 {
-	Vector3 v3 = Vector3();
+	Vector3 v3;
 
 	v3.X = X - rhs.X;
 	v3.Y = Y - rhs.Y;
