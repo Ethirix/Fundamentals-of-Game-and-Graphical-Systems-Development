@@ -1,18 +1,18 @@
 #pragma once
 #include "Transform.h"
-#include "Model.h"
+#include "Mesh.h"
 #include <string>
 #include <vector>
 
 class Object
 {
 public:
-	explicit Object(Model model, Transform transform = ::Transform());
+	explicit Object(std::shared_ptr<Mesh> mesh, Transform transform = ::Transform());
 
 	std::string Name;
 	Transform Transform;
-	Model Model;
+	std::shared_ptr<Mesh> Mesh;
 
-	std::vector<Object> Children = std::vector<Object>();
+	std::vector<std::shared_ptr<Object>> Children = std::vector<std::shared_ptr<Object>>();
 };
 

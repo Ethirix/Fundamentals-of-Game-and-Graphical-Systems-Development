@@ -3,7 +3,7 @@
 class SceneGraph
 {
 public:
-	std::vector<Object> Objects = std::vector<Object>();
+	std::vector<std::shared_ptr<Object>> Objects = std::vector<std::shared_ptr<Object>>();
 
 	Object& FindObjectWithName(std::string name);
 	//std::vector<Object&> FindObjectsWithName(std::string name);

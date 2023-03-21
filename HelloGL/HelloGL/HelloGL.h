@@ -6,7 +6,7 @@
 #include "Camera.h"
 #include "InputManager.h"
 #include "GL/freeglut.h"
-#include "Model.h"
+#include "Mesh.h"
 #include "SceneGraph.h"
 
 constexpr int FRAME_TIME = 16;
@@ -23,11 +23,11 @@ public:
 
 	void CheckKeyboardInputs();
 
-	void DrawObject(Model& model);
+	void DrawObject(const std::shared_ptr<Mesh>& mesh);
 
 	void DrawFrame();
-	void TraverseSceneGraphChildren(Object& object);
-	void UpdateObjectMatrix(Object& obj);
+	void TraverseSceneGraphChildren(const std::shared_ptr<Object>& object);
+	void UpdateObjectMatrix(const std::shared_ptr<Object>& obj);
 
 	InputManager InputManager;
 	Camera* Camera;

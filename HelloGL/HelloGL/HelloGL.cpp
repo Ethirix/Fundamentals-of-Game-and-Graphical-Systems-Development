@@ -44,7 +44,30 @@ HelloGL::HelloGL(int argc, char* argv[])
 	gluPerspective(75, 1, 0.1, 1000);
 	glMatrixMode(GL_MODELVIEW);
 
-	_sceneGraph.Objects.emplace_back(Model("Models/cube.txt"));
+	/*if (auto m = Mesh::LoadFromTXT("Models/cube.txt"))
+		_sceneGraph.Objects.emplace_back(m.value(), Transform(Vector3(0, 0, -5)));*/
+
+	for (unsigned i = 0; i < 50000; i++)
+	{
+		_sceneGraph.Objects.emplace_back(std::make_shared<Object>(
+			Mesh::LoadFromTXT("Models/cube.txt").value(),
+			Transform(
+				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
+				Vector3(rand() % 720, rand() % 720, rand() % 720)
+			))
+		);
+	}
+
+	for (unsigned i = 50000; i < 100000; i++)
+	{
+		_sceneGraph.Objects.emplace_back(std::make_shared<Object>(
+			Mesh::LoadFromTXT("Models/pyramid.txt").value(),
+			Transform(
+				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
+				Vector3(rand() % 720, rand() % 720, rand() % 720)
+			))
+		);
+	}
 
 	glutMainLoop();
 }
@@ -64,6 +87,11 @@ void HelloGL::Update()
 
 	CheckKeyboardInputs();
 
+	if (!_sceneGraph.Objects.empty())
+		_sceneGraph.Objects.pop_back();
+
+	Mesh::CheckMeshExistsInGame();
+
 	glutPostRedisplay();
 }
 
@@ -81,27 +109,27 @@ void HelloGL::CheckKeyboardInputs()
 {
 	if (InputManager.IsKeyDown(Keys::Keys::D))
 	{
-		_sceneGraph.Objects[0].Transform.Rotation.Z += 1.0f;
+		_sceneGraph.Objects[0]->Transform.Rotation.Z += 1.0f;
 	}
 	if (InputManager.IsKeyDown(Keys::Keys::A))
 	{
-		_sceneGraph.Objects[0].Transform.Rotation.Z -= 1.0f;
+		_sceneGraph.Objects[0]->Transform.Rotation.Z -= 1.0f;
 	}
 	if (InputManager.IsKeyDown(Keys::Keys::W))
 	{
-		_sceneGraph.Objects[0].Transform.Rotation.X += 1.0f;
+		_sceneGraph.Objects[0]->Transform.Rotation.X += 1.0f;
 	}
 	if (InputManager.IsKeyDown(Keys::Keys::S))
 	{
-		_sceneGraph.Objects[0].Transform.Rotation.X -= 1.0f;
+		_sceneGraph.Objects[0]->Transform.Rotation.X -= 1.0f;
 	}
 	if (InputManager.IsKeyDown(Keys::Keys::Q))
 	{
-		_sceneGraph.Objects[0].Transform.Rotation.Y -= 1.0f;
+		_sceneGraph.Objects[0]->Transform.Rotation.Y -= 1.0f;
 	}
 	if (InputManager.IsKeyDown(Keys::Keys::E))
 	{
-		_sceneGraph.Objects[0].Transform.Rotation.Y += 1.0f;
+		_sceneGraph.Objects[0]->Transform.Rotation.Y += 1.0f;
 	}
 
 	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::RIGHT_ARROW))
@@ -138,44 +166,44 @@ void HelloGL::CheckKeyboardInputs()
 
 void HelloGL::DrawFrame()
 {
-	for (Object& object : _sceneGraph.Objects)
+	for (auto& object : _sceneGraph.Objects)
 	{
 		TraverseSceneGraphChildren(object);
 	}
 }
 
-void HelloGL::TraverseSceneGraphChildren(Object& object)
+void HelloGL::TraverseSceneGraphChildren(const std::shared_ptr<Object>& object)
 {
 	glPushMatrix();
 	UpdateObjectMatrix(object);
-	DrawObject(object.Model);
+	DrawObject(object->Mesh);
 
-	for (Object& child : object.Children)
+	for (const auto& child : object->Children)
 	{
 		TraverseSceneGraphChildren(child);
 	}
 	glPopMatrix();
 }
 
-void HelloGL::UpdateObjectMatrix(Object& obj)
+void HelloGL::UpdateObjectMatrix(const std::shared_ptr<Object>& obj)
 {
-	glTranslatef(obj.Transform.Position.X,
-		obj.Transform.Position.Y,
-		obj.Transform.Position.Z);
+	glTranslatef(obj->Transform.Position.X,
+		obj->Transform.Position.Y,
+		obj->Transform.Position.Z);
 
-	glRotatef(obj.Transform.Rotation.X, 1, 0, 0);
-	glRotatef(obj.Transform.Rotation.Y, 0, 1, 0);
-	glRotatef(obj.Transform.Rotation.Z, 0, 0, -1);
+	glRotatef(obj->Transform.Rotation.X, 1, 0, 0);
+	glRotatef(obj->Transform.Rotation.Y, 0, 1, 0);
+	glRotatef(obj->Transform.Rotation.Z, 0, 0, -1);
 }
 
-void HelloGL::DrawObject(Model& model)
+void HelloGL::DrawObject(const std::shared_ptr<Mesh>& mesh)
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, model.IndexedVertices.first);
-	glColorPointer(3, GL_FLOAT, 0, model.IndexedColors.first);
+	glVertexPointer(3, GL_FLOAT, 0, mesh->IndexedVertices.first);
+	glColorPointer(3, GL_FLOAT, 0, mesh->IndexedColors.first);
 
-	glDrawElements(GL_TRIANGLES, model.Indices.second, GL_UNSIGNED_SHORT, model.Indices.first);
+	glDrawElements(GL_TRIANGLES, mesh->Indices.second, GL_UNSIGNED_SHORT, mesh->Indices.first);
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
