@@ -2,8 +2,8 @@
 
 #include <utility>
 
-Object::Object(::Model model, ::Transform transform)
+Object::Object(std::shared_ptr<::Mesh> mesh, ::Transform transform)
 {
-	Model = std::move(model);
+	Mesh = std::move(mesh);
 	Transform = transform;
 }
