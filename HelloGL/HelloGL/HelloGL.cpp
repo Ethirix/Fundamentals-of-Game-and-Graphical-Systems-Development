@@ -44,12 +44,9 @@ HelloGL::HelloGL(int argc, char* argv[])
 	gluPerspective(75, 1, 0.1, 1000);
 	glMatrixMode(GL_MODELVIEW);
 
-	/*if (auto m = Mesh::LoadFromTXT("Models/cube.txt"))
-		_sceneGraph.Objects.emplace_back(m.value(), Transform(Vector3(0, 0, -5)));*/
-
-	for (unsigned i = 0; i < 50000; i++)
+	for (unsigned i = 0; i < 5000; i++)
 	{
-		_sceneGraph.Objects.emplace_back(std::make_shared<Object>(
+		_sceneGraph._Objects.InsertFirst(std::make_shared<Object>(
 			Mesh::LoadFromTXT("Models/cube.txt").value(),
 			Transform(
 				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
@@ -58,9 +55,9 @@ HelloGL::HelloGL(int argc, char* argv[])
 		);
 	}
 
-	for (unsigned i = 50000; i < 100000; i++)
+	for (unsigned i = 5000; i < 10000; i++)
 	{
-		_sceneGraph.Objects.emplace_back(std::make_shared<Object>(
+		_sceneGraph._Objects.InsertFirst(std::make_shared<Object>(
 			Mesh::LoadFromTXT("Models/pyramid.txt").value(),
 			Transform(
 				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
@@ -87,8 +84,8 @@ void HelloGL::Update()
 
 	CheckKeyboardInputs();
 
-	if (!_sceneGraph.Objects.empty())
-		_sceneGraph.Objects.pop_back();
+	//if (!_sceneGraph.Objects.empty())
+	//	_sceneGraph.Objects.pop_back();
 
 	Mesh::CheckMeshExistsInGame();
 
@@ -107,6 +104,11 @@ void HelloGL::Display()
 
 void HelloGL::CheckKeyboardInputs()
 {
+	if (InputManager.IsKeyDown(Keys::Keys::F))
+	{
+		_sceneGraph._Objects.DeleteList();
+	}
+
 	if (InputManager.IsKeyDown(Keys::Keys::D))
 	{
 		_sceneGraph.Objects[0]->Transform.Rotation.Z += 1.0f;
@@ -166,9 +168,11 @@ void HelloGL::CheckKeyboardInputs()
 
 void HelloGL::DrawFrame()
 {
-	for (auto& object : _sceneGraph.Objects)
+	ListNode<std::shared_ptr<Object>>* node = _sceneGraph._Objects.GetNode(0);
+	while (node != nullptr)
 	{
-		TraverseSceneGraphChildren(object);
+		TraverseSceneGraphChildren(node->Data);
+		node = node->Next;
 	}
 }
 

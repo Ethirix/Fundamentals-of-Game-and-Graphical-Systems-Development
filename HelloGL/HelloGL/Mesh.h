@@ -82,13 +82,15 @@ public:
 
 	static void CheckMeshExistsInGame()
 	{
-		for (int i = 0; i < _loadedObjects.size(); i++)
+		//TODO: Revise this to work with LinkedLists
+
+		/*for (int i = 0; i < _loadedObjects.size(); i++)
 		{
 			if (_loadedObjects[i].second.use_count() == 1)
 			{
 				_loadedObjects.erase(_loadedObjects.begin() + i);
 			}
-		}
+		}*/
 	}
 
 private:
