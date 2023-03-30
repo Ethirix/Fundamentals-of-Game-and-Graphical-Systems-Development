@@ -122,31 +122,6 @@ void HelloGL::CheckKeyboardInputs()
 		_sceneGraph._Objects.DeleteList();
 	}
 
-	if (InputManager.IsKeyDown(Keys::Keys::D))
-	{
-		_sceneGraph.Objects[0]->Transform.Rotation.Z += 1.0f;
-	}
-	if (InputManager.IsKeyDown(Keys::Keys::A))
-	{
-		_sceneGraph.Objects[0]->Transform.Rotation.Z -= 1.0f;
-	}
-	if (InputManager.IsKeyDown(Keys::Keys::W))
-	{
-		_sceneGraph.Objects[0]->Transform.Rotation.X += 1.0f;
-	}
-	if (InputManager.IsKeyDown(Keys::Keys::S))
-	{
-		_sceneGraph.Objects[0]->Transform.Rotation.X -= 1.0f;
-	}
-	if (InputManager.IsKeyDown(Keys::Keys::Q))
-	{
-		_sceneGraph.Objects[0]->Transform.Rotation.Y -= 1.0f;
-	}
-	if (InputManager.IsKeyDown(Keys::Keys::E))
-	{
-		_sceneGraph.Objects[0]->Transform.Rotation.Y += 1.0f;
-	}
-
 	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::RIGHT_ARROW))
 	{
 		Camera->Center.X += 0.05f;
