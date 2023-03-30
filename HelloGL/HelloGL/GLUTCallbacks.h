@@ -18,4 +18,6 @@ namespace GLUTCallbacks
 	void Mouse(int button, int state, int x, int y);
 	void MouseMotion(int x, int y);
 	void MousePassiveMotion(int x, int y);
+
+	void OnWindowResize(int w, int h);
 }

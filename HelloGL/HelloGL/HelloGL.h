@@ -29,6 +29,8 @@ public:
 	void TraverseSceneGraphChildren(const std::shared_ptr<Object>& object);
 	void UpdateObjectMatrix(const std::shared_ptr<Object>& obj);
 
+	void OnWindowResize(int width, int height);
+
 	InputManager InputManager;
 	Camera* Camera;
 private:
