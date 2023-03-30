@@ -20,6 +20,8 @@ HelloGL::HelloGL(int argc, char* argv[])
 	glutCreateWindow("First OpenGL Program");
 
 	glutDisplayFunc(GLUTCallbacks::Display);
+	glutReshapeFunc(GLUTCallbacks::OnWindowResize);
+
 	glutTimerFunc(FRAME_TIME, GLUTCallbacks::Timer, FRAME_TIME);
 
 	glutKeyboardFunc(GLUTCallbacks::KeyboardDown);
@@ -76,6 +78,17 @@ HelloGL::~HelloGL()
 {
 	delete Camera;
 	Camera = nullptr;
+}
+
+void HelloGL::OnWindowResize(int width, int height)
+{
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glViewport(0, 0, width, height);
+	gluPerspective(75, static_cast<GLdouble>(width) / height, 0.1, 1000);
+	glMatrixMode(GL_MODELVIEW);
+
+	Display();
 }
 
 void HelloGL::Update()

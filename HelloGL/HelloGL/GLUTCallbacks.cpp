@@ -75,4 +75,10 @@ namespace GLUTCallbacks
 	{
 		helloGL->InputManager.SetCursorPosition(Vector2(x, y), Keys::MouseMovement::PASSIVE);
 	}
+
+	void OnWindowResize(int w, int h)
+	{
+		helloGL->OnWindowResize(w, h);
+	}
+
 }
