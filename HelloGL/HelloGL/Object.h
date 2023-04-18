@@ -2,7 +2,6 @@
 #include "Transform.h"
 #include "Mesh.h"
 #include <string>
-#include <vector>
 
 class Object
 {
@@ -13,6 +12,6 @@ public:
 	Transform Transform;
 	std::shared_ptr<Mesh> Mesh;
 
-	std::vector<std::shared_ptr<Object>> Children = std::vector<std::shared_ptr<Object>>();
+	LinkedList<std::shared_ptr<Object>> Children = LinkedList<std::shared_ptr<Object>>();
 };
 

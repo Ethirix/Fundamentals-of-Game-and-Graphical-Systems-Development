@@ -5,6 +5,7 @@
 #include <optional>
 #include <vector>
 
+#include "LinkedList.h"
 #include "Vector3.h"
 
 class Mesh
@@ -75,37 +76,43 @@ public:
 
 		file.close();
 
-		_loadedObjects.emplace_back(path, mesh);
+		_loadedObjects.MakeNode(std::pair(path, mesh));
 
 		return mesh;
 	}
 
 	static void CheckMeshExistsInGame()
 	{
-		for (int i = 0; i < _loadedObjects.size(); i++)
+		ListNode<std::pair<std::string, std::shared_ptr<Mesh>>>* node = _loadedObjects.GetNode(0);
+
+		while (node != nullptr)
 		{
-			if (_loadedObjects[i].second.use_count() == 1)
+			const auto temp = node;
+			node = node->Next;
+
+			if (temp->Data.second.use_count() == 1)
 			{
-				_loadedObjects.erase(_loadedObjects.begin() + i);
+				_loadedObjects.DeleteAt(_loadedObjects.GetIndex(temp));
 			}
 		}
 	}
 
 private:
-	inline static std::vector<std::pair<std::string, std::shared_ptr<Mesh>>> _loadedObjects{};
+	inline static LinkedList<std::pair<std::string, std::shared_ptr<Mesh>>> _loadedObjects{};
 
 	static std::optional<std::shared_ptr<Mesh>> HasModelAlreadyBeenLoaded(const std::string& key)
 	{
-		for (auto& [meshKey, mesh] : _loadedObjects)
+		auto node = _loadedObjects.GetNode(0);
+
+		while (node != nullptr)
 		{
-			if (meshKey == key)
+			if (node->Data.first == key)
 			{
-				return mesh;
+				return node->Data.second;
 			}
+			node = node->Next;
 		}
 
 		return {};
 	}
 };
-
-
