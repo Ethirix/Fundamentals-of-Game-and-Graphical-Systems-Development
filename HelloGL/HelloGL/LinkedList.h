@@ -29,10 +29,12 @@ public:
 	void DeleteList();
 	void DeleteList(ListNode<T>** node);
 	void DeleteAfter(ListNode<T>* node);
+	void DeleteAt(int pos);
 	void DeleteAt(ListNode<T>** node, int pos);
 	ListNode<T>* GetNode(int pos);
 	ListNode<T>* GetNode(ListNode<T>* node, int pos);
-	ListNode<T>* Find(ListNode<T>* node, int val);
+	ListNode<T>* Find(ListNode<T>* node, T val);
+	int GetIndex(ListNode<T>* node);
 	void PrintList(ListNode<T>* node);
 };
 

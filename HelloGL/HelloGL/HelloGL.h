@@ -26,7 +26,7 @@ public:
 	void DrawObject(const std::shared_ptr<Mesh>& mesh);
 
 	void DrawFrame();
-	void TraverseSceneGraphChildren(const std::shared_ptr<Object>& object);
+	void TraverseSceneGraphChildren(ListNode<std::shared_ptr<Object>>* node);
 	void UpdateObjectMatrix(const std::shared_ptr<Object>& obj);
 
 	void OnWindowResize(int width, int height);

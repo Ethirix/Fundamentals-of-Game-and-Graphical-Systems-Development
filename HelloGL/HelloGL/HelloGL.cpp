@@ -22,6 +22,7 @@ HelloGL::HelloGL(int argc, char* argv[])
 	glutDisplayFunc(GLUTCallbacks::Display);
 	glutReshapeFunc(GLUTCallbacks::OnWindowResize);
 
+
 	glutTimerFunc(FRAME_TIME, GLUTCallbacks::Timer, FRAME_TIME);
 
 	glutKeyboardFunc(GLUTCallbacks::KeyboardDown);
@@ -48,7 +49,7 @@ HelloGL::HelloGL(int argc, char* argv[])
 
 	for (unsigned i = 0; i < 5000; i++)
 	{
-		_sceneGraph._Objects.InsertFirst(std::make_shared<Object>(
+		_sceneGraph.Objects.InsertFirst(std::make_shared<Object>(
 			Mesh::LoadFromTXT("Models/cube.txt").value(),
 			Transform(
 				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
@@ -59,7 +60,7 @@ HelloGL::HelloGL(int argc, char* argv[])
 
 	for (unsigned i = 5000; i < 10000; i++)
 	{
-		_sceneGraph._Objects.InsertFirst(std::make_shared<Object>(
+		_sceneGraph.Objects.GetNode(i-5000)->Data->Children.InsertFirst(std::make_shared<Object>(
 			Mesh::LoadFromTXT("Models/pyramid.txt").value(),
 			Transform(
 				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
@@ -119,7 +120,12 @@ void HelloGL::CheckKeyboardInputs()
 {
 	if (InputManager.IsKeyDown(Keys::Keys::F))
 	{
-		_sceneGraph._Objects.DeleteList();
+		_sceneGraph.Objects.DeleteList();
+	}
+
+	if (InputManager.IsKeyDown(Keys::Keys::T))
+	{
+		_sceneGraph.Objects.DeleteAt(0);
 	}
 
 	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::RIGHT_ARROW))
@@ -156,23 +162,25 @@ void HelloGL::CheckKeyboardInputs()
 
 void HelloGL::DrawFrame()
 {
-	ListNode<std::shared_ptr<Object>>* node = _sceneGraph._Objects.GetNode(0);
+	ListNode<std::shared_ptr<Object>>* node = _sceneGraph.Objects.GetNode(0);
 	while (node != nullptr)
 	{
-		TraverseSceneGraphChildren(node->Data);
+		TraverseSceneGraphChildren(node);
 		node = node->Next;
 	}
 }
 
-void HelloGL::TraverseSceneGraphChildren(const std::shared_ptr<Object>& object)
+void HelloGL::TraverseSceneGraphChildren(ListNode<std::shared_ptr<Object>>* node)
 {
 	glPushMatrix();
-	UpdateObjectMatrix(object);
-	DrawObject(object->Mesh);
+	UpdateObjectMatrix(node->Data);
+	DrawObject(node->Data->Mesh);
 
-	for (const auto& child : object->Children)
+	ListNode<std::shared_ptr<Object>>* childNode = node->Data->Children.GetNode(0);
+	while (childNode != nullptr)
 	{
-		TraverseSceneGraphChildren(child);
+		TraverseSceneGraphChildren(childNode);
+		childNode = childNode->Next;
 	}
 	glPopMatrix();
 }

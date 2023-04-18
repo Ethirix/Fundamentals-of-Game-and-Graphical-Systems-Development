@@ -8,9 +8,7 @@ template <typename T>
 LinkedList<T>::LinkedList() = default;
 
 template <typename T>
-LinkedList<T>::~LinkedList()
-{
-}
+LinkedList<T>::~LinkedList() = default;
 
 template <typename T>
 ListNode<T>* LinkedList<T>::MakeNode(T data)
@@ -99,11 +97,10 @@ template <typename T>
 void LinkedList<T>::DeleteList()
 {
 	ListNode<T>* pTemp = _head;
-	ListNode<T>* next;
 
 	while (pTemp != nullptr)
 	{
-		next = pTemp->Next;
+		ListNode<T>* next = pTemp->Next;
 		delete pTemp;
 		pTemp = next;
 	}
@@ -115,11 +112,10 @@ template <typename T>
 void LinkedList<T>::DeleteList(ListNode<T>** node)
 {
 	ListNode<T>* pTemp = *node;
-	ListNode<T>* next;
 
 	while (pTemp != nullptr)
 	{
-		next = pTemp->Next;
+		ListNode<T>* next = pTemp->Next;
 		delete pTemp;
 		pTemp = next;
 	}
@@ -156,6 +152,24 @@ void LinkedList<T>::DeleteAt(ListNode<T>** node, int pos)
 	parentNode->Next = nodeToDelete->Next;
 	delete nodeToDelete;
 }
+
+template <typename T>
+void LinkedList<T>::DeleteAt(int pos)
+{
+	ListNode<T>* nodeToDelete = GetNode(pos);
+	if (pos == 0 && _head != nullptr
+		)
+	{
+		_head = nodeToDelete->Next;
+		delete nodeToDelete;
+		return;
+	}
+
+	ListNode<T>* parentNode = GetNode(pos - 1);
+	parentNode->Next = nodeToDelete->Next;
+	delete nodeToDelete;
+}
+
 
 template <typename T>
 ListNode<T>* LinkedList<T>::GetNode(int pos)
@@ -199,7 +213,7 @@ ListNode<T>* LinkedList<T>::GetNode(ListNode<T>* node, int pos)
 }
 
 template <typename T>
-ListNode<T>* LinkedList<T>::Find(ListNode<T>* node, int val)
+ListNode<T>* LinkedList<T>::Find(ListNode<T>* node, T val)
 {
 	ListNode<T>* pTemp = node->Next;
 
@@ -210,6 +224,23 @@ ListNode<T>* LinkedList<T>::Find(ListNode<T>* node, int val)
 
 	return pTemp;
 }
+
+template <typename T>
+int LinkedList<T>::GetIndex(ListNode<T>* node)
+{
+	ListNode<T>* tempNode = _head;
+	int index = 0;
+	while (tempNode != nullptr)
+	{
+		if (tempNode == node)
+		{
+			return index;
+		}
+		index++;
+		tempNode = tempNode->Next;
+	}
+}
+
 
 template <typename T>
 void LinkedList<T>::PrintList(ListNode<T>* node)
