@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include "GLUTCallbacks.h"
+#include "Screen.h"
 
 int main(int argc, char* argv[])
 {
@@ -14,7 +15,7 @@ HelloGL::HelloGL(int argc, char* argv[])
 	GLUTCallbacks::Init(this);
 	glutInit(&argc, argv);
 
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(800, 800);
 
 	glutCreateWindow("First OpenGL Program");
@@ -83,7 +84,8 @@ void HelloGL::OnWindowResize(int width, int height)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glViewport(0, 0, width, height);
-	gluPerspective(75, static_cast<GLdouble>(width) / height, 0.1, 1000);
+	gluPerspective(Camera->FieldOfView, static_cast<GLdouble>(width) / height, Camera->NearPlane, Camera->FarPlane);
+	Screen::SetResolution(width, height);
 	glMatrixMode(GL_MODELVIEW);
 
 	Display();
@@ -97,10 +99,6 @@ void HelloGL::Update()
 	          Camera->Up.X, Camera->Up.Y, Camera->Up.Z);
 
 	CheckKeyboardInputs();
-
-	//if (!_sceneGraph.Objects.empty())
-	//	_sceneGraph.Objects.pop_back();
-
 	Mesh::CheckMeshExistsInGame();
 
 	glutPostRedisplay();
