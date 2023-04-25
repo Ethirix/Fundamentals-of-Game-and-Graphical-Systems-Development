@@ -11,7 +11,7 @@ public:
 	Vector3 Center;
 	Vector3 Up;
 
-	float FieldOfView = 170.0f;
+	float FieldOfView = 90.0f;
 	float NearPlane = 0.1f;
 	float FarPlane = 1000.0f;
 };

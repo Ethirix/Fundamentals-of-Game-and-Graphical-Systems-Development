@@ -1,5 +1,11 @@
 #include "Texture2D.h"
 
+Texture2D::Texture2D(const Texture2D& texture2D)
+{
+	_id = texture2D.GetID();
+	_width = texture2D.GetWidth();
+	_height = texture2D.GetHeight();
+}
 
 Texture2D::~Texture2D()
 {

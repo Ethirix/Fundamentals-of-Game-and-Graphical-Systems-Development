@@ -3,10 +3,10 @@
 #include <iostream>
 #include <fstream>
 #include <optional>
-#include <vector>
 
 #include "LinkedList.hpp"
 #include "MeshData.h"
+#include "TextCoords.h"
 #include "Vector3.h"
 
 class Mesh
@@ -16,6 +16,7 @@ public:
 
 	MeshData<Vector3> IndexedVertices{};
 	MeshData<Vector3> IndexedColors{};
+	MeshData<TextCoords> TextureCoordinates{};
 	MeshData<unsigned short> Indices{};
 
 	static std::optional<std::shared_ptr<Mesh>> LoadFromTXT(const std::string& path)
@@ -64,6 +65,19 @@ public:
 			file >> line;
 			v3.Z = std::stof(line);
 			mesh->IndexedColors.Index[i] = v3;
+		}
+
+		file >> mesh->TextureCoordinates.IndexLength;
+		mesh->TextureCoordinates.Index = new TextCoords[mesh->TextureCoordinates.IndexLength];
+		for (unsigned i = 0; i < mesh->TextureCoordinates.IndexLength; i++)
+		{
+			TextCoords coords{};
+			file >> line;
+			coords.U = std::stof(line);
+			file >> line;
+			coords.V = std::stof(line);
+
+			mesh->TextureCoordinates.Index[i] = coords;
 		}
 
 		file >> mesh->Indices.IndexLength;

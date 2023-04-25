@@ -9,16 +9,20 @@
 
 #include <Windows.h>
 #include <gl/GL.h>
+#include <gl/GLU.h>
 
 class Texture2D
 {
 public:
+	Texture2D() = default;
+	Texture2D(unsigned id, unsigned width, unsigned height);
+	Texture2D(const Texture2D &texture2D);
+
 	~Texture2D();
 
-	static std::optional<std::shared_ptr<Texture2D>> Load(std::string path)
+	static std::optional<std::shared_ptr<Texture2D>> Load(const std::string& path)
 	{
-		auto file = LoadRAW(path);
-		if (file.has_value())
+		if (auto file = LoadRAW(path); file.has_value())
 		{
 			return file.value();
 		}
@@ -30,15 +34,13 @@ public:
 	[[nodiscard]] unsigned GetHeight() const;
 
 private:
-	Texture2D(unsigned id, unsigned width, unsigned height);
-
-	unsigned _id;
-	unsigned _width;
-	unsigned _height;
+	unsigned _id = 0;
+	unsigned _width = 0;
+	unsigned _height = 0;
 
 	static inline LinkedList<std::pair<std::string, std::shared_ptr<Texture2D>>> _loadedTextures{};
 
-	static std::optional<std::shared_ptr<Texture2D>> IsTextureLoaded(std::string key)
+	static std::optional<std::shared_ptr<Texture2D>> IsTextureLoaded(const std::string& key)
 	{
 		auto node = _loadedTextures.GetNode(0);
 
@@ -56,6 +58,11 @@ private:
 
 	static std::optional<std::shared_ptr<Texture2D>> LoadRAW(const std::string& path)
 	{
+		if (auto texture2d = IsTextureLoaded(path); texture2d.has_value())
+		{
+			return texture2d.value();
+		}
+
 		std::ifstream file;
 		
 		file.open(path, std::ios::binary);
@@ -67,24 +74,35 @@ private:
 		}
 
 		const auto size = static_cast<unsigned>(std::filesystem::file_size(path));
-		const auto imageSize = static_cast<unsigned>(sqrt((size * 8) / 24));
+		float imageSizeF = sqrt((size * 8) / 24);
 
-		const auto textureData = new char[size];
-		file.read(textureData, size);
+		if (floorf(imageSizeF) != imageSizeF)
+		{
+			std::cout << "Image is not a square - path: " << path << std::endl;
+			return {};
+		}
 
-		if ((size & size - 1) != 0)
+		auto imageSize = static_cast<unsigned>(imageSizeF);
+
+		if ((imageSize & imageSize - 1) != 0)
 		{
 			std::cout << "File size is not Power of 2 - path: " << path << std::endl;
 			return {};
 		}
+
+		char* textureData = new char[size];
+		file.read(textureData, size);
+		file.close();
+
 		unsigned id;
 		glGenTextures(1, &id);
 		glBindTexture(GL_TEXTURE_2D, id);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageSize, imageSize, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, textureData);
-		delete[] textureData;
-		file.close();
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, imageSize, imageSize, GL_RGB, GL_UNSIGNED_BYTE, textureData);
 
-		auto texture2D = std::make_shared<Texture2D>(Texture2D(id, imageSize, imageSize));
+		auto texture2D = std::make_shared<Texture2D>(id, imageSize, imageSize);
+		_loadedTextures.MakeNode(std::pair(path, texture2D));
+
+		delete[] textureData;
 		return texture2D;
 	}
 };
