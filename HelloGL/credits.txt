@@ -1,1 +1,2 @@
 https://stackoverflow.com/questions/49219586/making-a-solar-system-in-opengl
+https://stackoverflow.com/questions/600293/how-to-check-if-a-number-is-a-power-of-2

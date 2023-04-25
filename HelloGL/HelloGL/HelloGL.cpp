@@ -3,6 +3,7 @@
 #include <cmath>
 #include "GLUTCallbacks.h"
 #include "Screen.h"
+#include "Texture2D.h"
 
 int main(int argc, char* argv[])
 {
@@ -47,6 +48,8 @@ HelloGL::HelloGL(int argc, char* argv[])
 	glViewport(0, 0, 800, 800);
 	gluPerspective(75, 1, 0.1, 1000);
 	glMatrixMode(GL_MODELVIEW);
+
+	//std::shared_ptr<Texture2D> t2d = Texture2D::Load("Textures/stars.raw").value();
 
 	for (unsigned i = 0; i < 5000; i++)
 	{
@@ -198,10 +201,10 @@ void HelloGL::DrawObject(const std::shared_ptr<Mesh>& mesh)
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, mesh->IndexedVertices.first);
-	glColorPointer(3, GL_FLOAT, 0, mesh->IndexedColors.first);
+	glVertexPointer(3, GL_FLOAT, 0, mesh->IndexedVertices.Index);
+	glColorPointer(3, GL_FLOAT, 0, mesh->IndexedColors.Index);
 
-	glDrawElements(GL_TRIANGLES, mesh->Indices.second, GL_UNSIGNED_SHORT, mesh->Indices.first);
+	glDrawElements(GL_TRIANGLES, mesh->Indices.IndexLength, GL_UNSIGNED_SHORT, mesh->Indices.Index);
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);

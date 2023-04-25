@@ -5,18 +5,18 @@
 #include <optional>
 #include <vector>
 
-#include "LinkedList.h"
+#include "LinkedList.hpp"
+#include "MeshData.h"
 #include "Vector3.h"
 
 class Mesh
 {
 public:
 	Mesh() = default;
-	Mesh(const std::string& path);
 
-	std::pair<Vector3*, unsigned> IndexedVertices{};
-	std::pair<Vector3*, unsigned> IndexedColors{};
-	std::pair<unsigned short*, unsigned> Indices{};
+	MeshData<Vector3> IndexedVertices{};
+	MeshData<Vector3> IndexedColors{};
+	MeshData<unsigned short> Indices{};
 
 	static std::optional<std::shared_ptr<Mesh>> LoadFromTXT(const std::string& path)
 	{
@@ -38,9 +38,9 @@ public:
 			return {};
 		}
 
-		file >> mesh->IndexedVertices.second;
-		mesh->IndexedVertices.first = new Vector3[mesh->IndexedVertices.second];
-		for (unsigned i = 0; i < mesh->IndexedVertices.second; i++)
+		file >> mesh->IndexedVertices.IndexLength;
+		mesh->IndexedVertices.Index = new Vector3[mesh->IndexedVertices.IndexLength];
+		for (unsigned i = 0; i < mesh->IndexedVertices.IndexLength; i++)
 		{
 			Vector3 v3;
 			file >> line;
@@ -49,12 +49,12 @@ public:
 			v3.Y = std::stof(line);
 			file >> line;
 			v3.Z = std::stof(line);
-			mesh->IndexedVertices.first[i] = v3;
+			mesh->IndexedVertices.Index[i] = v3;
 		}
 
-		file >> mesh->IndexedColors.second;
-		mesh->IndexedColors.first = new Vector3[mesh->IndexedColors.second];
-		for (unsigned i = 0; i < mesh->IndexedColors.second; i++)
+		file >> mesh->IndexedColors.IndexLength;
+		mesh->IndexedColors.Index = new Vector3[mesh->IndexedColors.IndexLength];
+		for (unsigned i = 0; i < mesh->IndexedColors.IndexLength; i++)
 		{
 			Vector3 v3;
 			file >> line;
@@ -63,15 +63,15 @@ public:
 			v3.Y = std::stof(line);
 			file >> line;
 			v3.Z = std::stof(line);
-			mesh->IndexedColors.first[i] = v3;
+			mesh->IndexedColors.Index[i] = v3;
 		}
 
-		file >> mesh->Indices.second;
-		mesh->Indices.first = new unsigned short[mesh->Indices.second];
-		for (unsigned i = 0; i < mesh->Indices.second; i++)
+		file >> mesh->Indices.IndexLength;
+		mesh->Indices.Index = new unsigned short[mesh->Indices.IndexLength];
+		for (unsigned i = 0; i < mesh->Indices.IndexLength; i++)
 		{
 			file >> line;
-			mesh->Indices.first[i] = std::stoi(line);
+			mesh->Indices.Index[i] = std::stoi(line);
 		}
 
 		file.close();
