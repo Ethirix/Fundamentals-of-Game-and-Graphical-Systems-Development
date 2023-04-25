@@ -23,7 +23,7 @@ public:
 
 	void CheckKeyboardInputs();
 
-	void DrawObject(const std::shared_ptr<Mesh>& mesh);
+	void DrawObject(const std::shared_ptr<Object>& obj);
 
 	void DrawFrame();
 	void TraverseSceneGraphChildren(ListNode<std::shared_ptr<Object>>* node);

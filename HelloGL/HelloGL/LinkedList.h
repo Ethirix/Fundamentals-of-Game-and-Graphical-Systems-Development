@@ -9,7 +9,7 @@ template <typename T>
 struct ListNode
 {
 	T Data;
-	ListNode* Next;
+	ListNode* Next{};
 };
 
 template <typename T>
