@@ -10,6 +10,12 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+//TODO: OBJ Loader - includes Advanced Texturing
+//TODO: Text Display
+//TODO: Materials and Lighting
+//TODO: Additional Features
+//TODO: A Scene (simulation or something).
+
 HelloGL::HelloGL(int argc, char* argv[])
 {
 	GLUTCallbacks::Init(this);
@@ -34,6 +40,8 @@ HelloGL::HelloGL(int argc, char* argv[])
 	glutMotionFunc(GLUTCallbacks::MouseMotion);
 	glutPassiveMotionFunc(GLUTCallbacks::MousePassiveMotion);
 
+	glutSetCursor(GLUT_CURSOR_NONE);
+
 	Camera = new ::Camera();
 
 	glEnable(GL_TEXTURE_2D);
@@ -47,11 +55,13 @@ HelloGL::HelloGL(int argc, char* argv[])
 	gluPerspective(75, 1, 0.1, 1000);
 	glMatrixMode(GL_MODELVIEW);
 
+	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
+
 	for (unsigned i = 0; i < 10000; i++)
 	{
 		_sceneGraph.Objects.InsertFirst(std::make_shared<Object>(
 			"Models/cube2.txt",
-			"Textures/Penguins.raw",
+			"Textures/stars.raw",
 			Transform(
 				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
 				Vector3(rand() % 720, rand() % 720, rand() % 720)
@@ -59,6 +69,7 @@ HelloGL::HelloGL(int argc, char* argv[])
 		);
 	}
 
+	glutWarpPointer(Screen::GetResolution().X / 2, Screen::GetResolution().Y / 2);
 	glutMainLoop();
 }
 
@@ -83,6 +94,26 @@ void HelloGL::OnWindowResize(int width, int height)
 void HelloGL::Update()
 {
 	glLoadIdentity();
+
+	Camera->Yaw += InputManager.GetCursorPosition().X - Screen::GetResolution().X / 2;
+	Camera->Pitch -= InputManager.GetCursorPosition().Y - Screen::GetResolution().Y / 2;
+
+	if (Camera->Pitch > 89.0f)
+		Camera->Pitch = 89.0f;
+	if (Camera->Pitch < -89.0f)
+		Camera->Pitch = -89.0f;
+
+	Camera->Eye = Camera->Position; //GLOBAL SPACE MOVEMENT
+
+	Vector3 dir;
+	dir.X = cos((PI * Camera->Yaw) / 180) * cos((PI * Camera->Pitch) / 180);
+	dir.Y = sin((PI * Camera->Pitch) / 180);
+	dir.Z = sin((PI * Camera->Yaw) / 180) * cos((PI * Camera->Pitch) / 180);
+	Camera->Center = Camera->Eye + dir.Normalize();
+
+	
+	glutWarpPointer(Screen::GetResolution().X / 2, Screen::GetResolution().Y / 2);
+
 	gluLookAt(Camera->Eye.X, Camera->Eye.Y, Camera->Eye.Z,
 		Camera->Center.X, Camera->Center.Y, Camera->Center.Z,
 	          Camera->Up.X, Camera->Up.Y, Camera->Up.Z);
@@ -117,33 +148,33 @@ void HelloGL::CheckKeyboardInputs()
 
 	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::RIGHT_ARROW))
 	{
-		Camera->Center.X += 0.1f;
-		Camera->Eye.X += 0.1f;
+		Camera->Position.X += 0.1f;
 	}
 	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::LEFT_ARROW))
 	{
-		Camera->Eye.X -= 0.1f;
-		Camera->Center.X -= 0.1f;
+		Camera->Position.X -= 0.1f;
 	}
 	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::DOWN_ARROW))
 	{
-		Camera->Eye.Z += 0.1f;
-		Camera->Center.Z += 0.1f;
+		Camera->Position.Z += 0.1f;
 	}
 	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::UP_ARROW))
 	{
-		Camera->Eye.Z -= 0.1f;
-		Camera->Center.Z -= 0.1f;
+		Camera->Position.Z -= 0.1f;
+		//Camera->Eye = Camera->Center; FORWARD ROTATION BASED ONLY
 	}
 	if (InputManager.IsKeyDown(Keys::Keys::SPACE))
 	{
-		Camera->Eye.Y += 0.1f;
-		Camera->Center.Y += 0.1f;
+		Camera->Position.Y += 0.1f;
 	}
 	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::LEFT_CONTROL))
 	{
-		Camera->Eye.Y -= 0.1f;
-		Camera->Center.Y -= 0.1f;
+		Camera->Position.Y -= 0.1f;
+	}
+
+	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::LEFT_ALT) && InputManager.IsSpecialKeyDown(Keys::SpecialKeys::F4))
+	{
+		glutLeaveMainLoop();
 	}
 }
 
