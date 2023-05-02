@@ -140,6 +140,7 @@
     <ClInclude Include="LinkedList.hpp" />
     <ClInclude Include="Matrix4x4.h" />
     <ClInclude Include="MeshData.h" />
+    <ClInclude Include="MeshLoadingData.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="Mesh.h" />

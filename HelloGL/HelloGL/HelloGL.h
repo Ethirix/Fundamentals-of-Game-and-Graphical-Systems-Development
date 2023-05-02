@@ -35,4 +35,5 @@ public:
 	Camera* Camera;
 private:
 	SceneGraph _sceneGraph;
+	bool _mouseBoundToScreen = true;
 };

@@ -47,6 +47,7 @@ HelloGL::HelloGL(int argc, char* argv[])
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+
 	glCullFace(GL_BACK);
 
 	glMatrixMode(GL_PROJECTION);
@@ -57,10 +58,10 @@ HelloGL::HelloGL(int argc, char* argv[])
 
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
-	for (unsigned i = 0; i < 10000; i++)
+	for (unsigned i = 0; i < 100; i++)
 	{
 		_sceneGraph.Objects.InsertFirst(std::make_shared<Object>(
-			"Models/cube2.txt",
+			"Models/cube.obj",
 			"Textures/stars.raw",
 			Transform(
 				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
@@ -95,24 +96,32 @@ void HelloGL::Update()
 {
 	glLoadIdentity();
 
-	Camera->Yaw += InputManager.GetCursorPosition().X - Screen::GetResolution().X / 2;
-	Camera->Pitch -= InputManager.GetCursorPosition().Y - Screen::GetResolution().Y / 2;
+	if (_mouseBoundToScreen)
+	{
+		Vector2 resolution = Screen::GetResolution();
+		if (static_cast<int>(resolution.X) % 2 != 0)
+			resolution.X--;
+		if (static_cast<int>(resolution.Y) % 2 != 0)
+			resolution.Y--;
 
-	if (Camera->Pitch > 89.0f)
-		Camera->Pitch = 89.0f;
-	if (Camera->Pitch < -89.0f)
-		Camera->Pitch = -89.0f;
+		Camera->Yaw += InputManager.GetCursorPosition().X - resolution.X / 2;
+		Camera->Pitch -= InputManager.GetCursorPosition().Y - resolution.Y / 2;
 
-	Camera->Eye = Camera->Position; //GLOBAL SPACE MOVEMENT
+		if (Camera->Pitch > 89.0f)
+			Camera->Pitch = 89.0f;
+		if (Camera->Pitch < -89.0f)
+			Camera->Pitch = -89.0f;
 
-	Vector3 dir;
-	dir.X = cos((PI * Camera->Yaw) / 180) * cos((PI * Camera->Pitch) / 180);
-	dir.Y = sin((PI * Camera->Pitch) / 180);
-	dir.Z = sin((PI * Camera->Yaw) / 180) * cos((PI * Camera->Pitch) / 180);
-	Camera->Center = Camera->Eye + dir.Normalize();
+		Camera->Eye = Camera->Position; //GLOBAL SPACE MOVEMENT
 
-	
-	glutWarpPointer(Screen::GetResolution().X / 2, Screen::GetResolution().Y / 2);
+		Vector3 dir;
+		dir.X = cos((PI * Camera->Yaw) / 180) * cos((PI * Camera->Pitch) / 180);
+		dir.Y = sin((PI * Camera->Pitch) / 180);
+		dir.Z = sin((PI * Camera->Yaw) / 180) * cos((PI * Camera->Pitch) / 180);
+		Camera->Center = Camera->Eye + dir.Normalize();
+
+		glutWarpPointer(resolution.X / 2, resolution.Y / 2);
+	}
 
 	gluLookAt(Camera->Eye.X, Camera->Eye.Y, Camera->Eye.Z,
 		Camera->Center.X, Camera->Center.Y, Camera->Center.Z,
@@ -172,6 +181,16 @@ void HelloGL::CheckKeyboardInputs()
 		Camera->Position.Y -= 0.1f;
 	}
 
+	if (InputManager.IsKeyDown(Keys::Keys::ESCAPE))
+	{
+		_mouseBoundToScreen = !_mouseBoundToScreen;
+
+		if (_mouseBoundToScreen)
+			glutSetCursor(GLUT_CURSOR_NONE);
+		if (!_mouseBoundToScreen)
+			glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+	}
+
 	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::LEFT_ALT) && InputManager.IsSpecialKeyDown(Keys::SpecialKeys::F4))
 	{
 		glutLeaveMainLoop();
@@ -217,16 +236,16 @@ void HelloGL::UpdateObjectMatrix(const std::shared_ptr<Object>& obj)
 void HelloGL::DrawObject(const std::shared_ptr<Object>& obj)
 {
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
 
+	glNormalPointer(GL_FLOAT, 0, obj->Mesh->IndexedNormals.Index);
 	glVertexPointer(3, GL_FLOAT, 0, obj->Mesh->IndexedVertices.Index);
-	glColorPointer(3, GL_FLOAT, 0, obj->Mesh->IndexedColors.Index);
 	glTexCoordPointer(2, GL_FLOAT, 0, obj->Mesh->TextureCoordinates.Index);
 
 	glDrawElements(GL_TRIANGLES, obj->Mesh->Indices.IndexLength, GL_UNSIGNED_SHORT, obj->Mesh->Indices.Index);
 
-	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
