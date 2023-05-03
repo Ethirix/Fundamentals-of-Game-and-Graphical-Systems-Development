@@ -5,7 +5,8 @@
 *.slo
 *.lo
 *.o
-*.obj
+HelloGL/Debug/*.obj
+HelloGL/Release/*.obj
 
 # Precompiled Headers
 *.gch
@@ -107,7 +108,8 @@ StyleCopReport.xml
 *_h.h
 *.ilk
 *.meta
-*.obj
+HelloGL/Debug/*.obj
+HelloGL/Release/*.obj
 *.iobj
 *.pch
 *.pdb
