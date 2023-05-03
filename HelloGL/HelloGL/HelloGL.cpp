@@ -129,6 +129,7 @@ void HelloGL::Update()
 
 	CheckKeyboardInputs();
 	Mesh::CheckMeshExistsInGame();
+	Texture2D::CheckTextureExistsInGame();
 
 	glutPostRedisplay();
 }
@@ -235,13 +236,16 @@ void HelloGL::UpdateObjectMatrix(const std::shared_ptr<Object>& obj)
 
 void HelloGL::DrawObject(const std::shared_ptr<Object>& obj)
 {
+	if (obj->Mesh == nullptr)
+		return;
+
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
 
 	glNormalPointer(GL_FLOAT, 0, obj->Mesh->IndexedNormals.Index);
-	glVertexPointer(3, GL_FLOAT, 0, obj->Mesh->IndexedVertices.Index);
 	glTexCoordPointer(2, GL_FLOAT, 0, obj->Mesh->TextureCoordinates.Index);
+	glVertexPointer(3, GL_FLOAT, 0, obj->Mesh->IndexedVertices.Index);
 
 	glDrawElements(GL_TRIANGLES, obj->Mesh->Indices.IndexLength, GL_UNSIGNED_SHORT, obj->Mesh->Indices.Index);
 

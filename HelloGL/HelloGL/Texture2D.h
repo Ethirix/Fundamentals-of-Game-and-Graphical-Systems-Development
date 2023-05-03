@@ -29,6 +29,21 @@ public:
 		return{};
 	}
 
+	static void CheckTextureExistsInGame()
+	{
+		ListNode<std::pair<std::string, std::shared_ptr<Texture2D>>>* node = _loadedTextures.GetNode(0);
+
+		while (node != nullptr)
+		{
+			const auto temp = node;
+			node = node->Next;
+
+			if (temp->Data.second.use_count() == 1)
+			{
+				_loadedTextures.DeleteAt(_loadedTextures.GetIndex(temp));
+			}
+		}
+	}
 	[[nodiscard]] unsigned GetID() const;
 	[[nodiscard]] unsigned GetWidth() const;
 	[[nodiscard]] unsigned GetHeight() const;
@@ -56,8 +71,11 @@ private:
 		return {};
 	}
 
-	static std::optional<std::shared_ptr<Texture2D>> LoadRAW(const std::string& path)
+	static std::optional<std::shared_ptr<Texture2D>> LoadFromRAW(const std::string& path)
 	{
+		if (path.empty())
+			return {};
+
 		if (auto texture2d = IsTextureLoaded(path); texture2d.has_value())
 		{
 			return texture2d.value();

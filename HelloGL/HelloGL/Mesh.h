@@ -163,6 +163,7 @@ public:
 			else if (token == "f")
 			{
 				std::vector<unsigned short> data;
+				unsigned short nGonCheck = 0;
 
 				while (true)
 				{
@@ -172,19 +173,22 @@ public:
 					if (setOfData.empty())
 						break;
 
+					nGonCheck++;
+
+					//CATCHES NONE TRIANGLE MESHES
+					if (nGonCheck > 3)
+						return {};
+
 					std::replace(setOfData.begin(), setOfData.end(), '/', ' ');
 					
 					std::istringstream ss(setOfData);
 					unsigned short temp;
 					while (ss >> temp)
-						data.emplace_back(temp);
+						data.emplace_back(temp - 1);
 
 					faceElements.emplace_back(data[0]);
 					data.clear();
 				}
-				//face elements
-				// vertex indices/texture coordinate indices/vertex normal indices
-				// v/vt/vn
 			}
 		}
 
@@ -216,6 +220,7 @@ public:
 			meshData.Mesh->Indices.Index[i] = faceElements[i];
 		}
 
+		_loadedObjects.MakeNode(std::pair(path, meshData));
 		return meshData;
 	}
 
