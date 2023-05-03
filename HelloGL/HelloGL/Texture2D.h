@@ -11,6 +11,8 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
+#include "TGAData.h"
+
 class Texture2D
 {
 public:
@@ -22,10 +24,21 @@ public:
 
 	static std::optional<std::shared_ptr<Texture2D>> Load(const std::string& path)
 	{
-		if (auto file = LoadRAW(path); file.has_value())
+		if (path.find(".tga") != std::string::npos)
 		{
-			return file.value();
+			if (auto file = LoadFromTGA(path); file.has_value())
+			{
+				return file.value();
+			}
 		}
+		else if (path.find(".raw") != std::string::npos)
+		{
+			if (auto file = LoadFromRAW(path); file.has_value())
+			{
+				return file.value();
+			}
+		}
+
 		return{};
 	}
 
@@ -44,6 +57,7 @@ public:
 			}
 		}
 	}
+
 	[[nodiscard]] unsigned GetID() const;
 	[[nodiscard]] unsigned GetWidth() const;
 	[[nodiscard]] unsigned GetHeight() const;
@@ -123,5 +137,70 @@ private:
 		delete[] textureData;
 		return texture2D;
 	}
-};
 
+	static std::optional<std::shared_ptr<Texture2D>> LoadFromTGA(const std::string& path)
+	{
+		std::ifstream inFile;
+
+		if (path.empty())
+			return {};
+
+		if (auto texture2d = IsTextureLoaded(path); texture2d.has_value())
+		{
+			return texture2d.value();
+		}
+
+		inFile.open(path, std::ios::binary);
+		if (!inFile.good())
+		{
+			std::cerr  << "Can't open texture file " << path << std::endl;
+			return {};
+		}
+
+		char* headerData = new char[18];
+
+		inFile.seekg(0, std::ios::beg);
+		inFile.read(headerData, 18);
+		inFile.seekg(0, std::ios::end);
+
+		TGAData data{};
+		data.Depth = headerData[16];
+		data.ImageType = headerData[2];
+		data.ImageWidth = static_cast<unsigned short>(headerData[13] << 8) + static_cast<unsigned short>(headerData[12]);
+		data.ImageHeight = static_cast<unsigned short>(headerData[15] << 8) + static_cast<unsigned short>(headerData[14]);
+		data.FileSize = static_cast<int>(inFile.tellg()) - 18;
+
+		char* textureData = new char[data.FileSize];
+		inFile.seekg(18, std::ios::beg);
+		inFile.read(textureData, data.FileSize);
+		inFile.close();
+
+		unsigned id;
+		if (data.ImageType == 2)
+		{
+			glGenTextures(1, &id);
+			glBindTexture(GL_TEXTURE_2D, id);
+
+			if (data.Depth == 30)
+			{
+				gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, data.ImageWidth, data.ImageHeight, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+			}
+			else if (data.Depth == 24)
+			{
+				gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, data.ImageWidth, data.ImageHeight, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+			}
+		}
+		else
+		{
+			return {};
+		}
+
+		delete [] headerData;
+		delete [] textureData;
+
+		std::shared_ptr<Texture2D> texture2D = std::make_shared<Texture2D>(id, data.ImageWidth, data.ImageHeight);
+		_loadedTextures.MakeNode(std::pair(path, texture2D));
+
+		return texture2D;
+	}
+};

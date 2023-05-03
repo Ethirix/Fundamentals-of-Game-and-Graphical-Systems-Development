@@ -58,11 +58,11 @@ HelloGL::HelloGL(int argc, char* argv[])
 
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
-	for (unsigned i = 0; i < 100; i++)
+	for (unsigned i = 0; i < 1000; i++)
 	{
 		_sceneGraph.Objects.InsertFirst(std::make_shared<Object>(
-			"Models/cube.obj",
-			"Textures/stars.raw",
+			"Models/icosphere.obj",
+			"Textures/IcosphereTexture.tga",
 			Transform(
 				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
 				Vector3(rand() % 720, rand() % 720, rand() % 720)
