@@ -70,6 +70,18 @@ HelloGL::HelloGL(int argc, char* argv[])
 		);
 	}
 
+	for (unsigned i = 0; i < 1000; i++)
+	{
+		_sceneGraph.Objects.InsertFirst(std::make_shared<Object>(
+			"Models/cube.obj",
+			"Textures/stars.raw",
+			Transform(
+				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
+				Vector3(rand() % 720, rand() % 720, rand() % 720)
+			))
+		);
+	}
+
 	glutWarpPointer(Screen::GetResolution().X / 2, Screen::GetResolution().Y / 2);
 	glutMainLoop();
 }
@@ -239,6 +251,7 @@ void HelloGL::DrawObject(const std::shared_ptr<Object>& obj)
 	if (obj->Mesh == nullptr)
 		return;
 
+	glBindTexture(GL_TEXTURE_2D, obj->Texture->GetID());
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
