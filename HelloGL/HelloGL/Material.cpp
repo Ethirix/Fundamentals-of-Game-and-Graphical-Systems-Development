@@ -8,7 +8,6 @@ Material::Material()
 	Shininess = 0.0f;
 }
 
-
 Material::Material(const Vector4& ambient, const Vector4& diffuse, const Vector4& specular, float shininess)
 {
 	Ambient = ambient;
