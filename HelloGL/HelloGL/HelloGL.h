@@ -9,6 +9,7 @@
 #include "GL/freeglut.h"
 #include "Mesh.h"
 #include "SceneGraph.h"
+#include "Text.h"
 
 constexpr int FRAME_TIME = 16;
 constexpr double PI = 3.141592653589793;
@@ -26,6 +27,7 @@ public:
 
 	void DrawObject(const std::shared_ptr<Object>& obj);
 	void DrawLight();
+	void DrawString(const std::shared_ptr<Text>& text);
 
 	void DrawFrame();
 	void TraverseSceneGraphChildren(ListNode<std::shared_ptr<Object>>* node);
