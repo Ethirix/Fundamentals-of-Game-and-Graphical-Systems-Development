@@ -10,7 +10,6 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-//TODO: OBJ Loader - includes Advanced Texturing
 //TODO: Text Display
 //TODO: Materials and Lighting
 //TODO: Additional Features
@@ -40,6 +39,9 @@ HelloGL::HelloGL(int argc, char* argv[])
 	glutMotionFunc(GLUTCallbacks::MouseMotion);
 	glutPassiveMotionFunc(GLUTCallbacks::MousePassiveMotion);
 
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+
 	glutSetCursor(GLUT_CURSOR_NONE);
 
 	Camera = new ::Camera();
@@ -66,7 +68,13 @@ HelloGL::HelloGL(int argc, char* argv[])
 			Transform(
 				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
 				Vector3(rand() % 720, rand() % 720, rand() % 720)
-			))
+			),
+			Material(
+				Vector4(0.8f, 0.05f, 0.05f, 1.0f), 
+				Vector4(0.8f, 0.05f, 0.05f, 1.0f), 
+				Vector4(1.0f, 1.0f, 1.0f, 1.0f), 
+				100.0f)
+			)
 		);
 	}
 
@@ -78,9 +86,23 @@ HelloGL::HelloGL(int argc, char* argv[])
 			Transform(
 				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
 				Vector3(rand() % 720, rand() % 720, rand() % 720)
-			))
+			),
+			Material(
+				Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+				Vector4(0.8f, 1.0f, 1.0f, 1.0f),
+				Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+				100.0f)
+			)
 		);
 	}
+
+	_light = Light(Vector3(), 
+		Lighting(
+			Vector4(0.2f, 0.2f, 0.2f, 1.0f), 
+			Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+			Vector4(0.2f, 0.2f, 0.2f, 1.0f)
+		)
+	);
 
 	glutWarpPointer(Screen::GetResolution().X / 2, Screen::GetResolution().Y / 2);
 	glutMainLoop();
@@ -260,9 +282,22 @@ void HelloGL::DrawObject(const std::shared_ptr<Object>& obj)
 	glTexCoordPointer(2, GL_FLOAT, 0, obj->Mesh->TextureCoordinates.Index);
 	glVertexPointer(3, GL_FLOAT, 0, obj->Mesh->IndexedVertices.Index);
 
+	glMaterialfv(GL_FRONT, GL_AMBIENT, &obj->Material.Ambient.X);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, &obj->Material.Diffuse.X);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, &obj->Material.Specular.X);
+	glMaterialf(GL_FRONT, GL_SHININESS, obj->Material.Shininess);
 	glDrawElements(GL_TRIANGLES, obj->Mesh->Indices.IndexLength, GL_UNSIGNED_SHORT, obj->Mesh->Indices.Index);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+}
+
+void HelloGL::DrawLight()
+{
+	glLightfv(GL_LIGHT0, GL_AMBIENT, &_light.Lighting.Ambient.X);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, &_light.Lighting.Diffuse.X);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, &_light.Lighting.Specular.X);
+
+	glLightfv(GL_LIGHT0, GL_POSITION, &_light.Position.X);
 }

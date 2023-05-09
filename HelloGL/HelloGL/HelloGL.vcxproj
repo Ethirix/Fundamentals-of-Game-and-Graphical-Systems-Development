@@ -136,8 +136,11 @@
     <ClInclude Include="HelloGL.h" />
     <ClInclude Include="InputEnums.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="Lighting.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="LinkedList.hpp" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Matrix4x4.h" />
     <ClInclude Include="MeshData.h" />
     <ClInclude Include="MeshLoadingData.h" />
@@ -160,6 +163,8 @@
     <ClCompile Include="GLUTCallbacks.cpp" />
     <ClCompile Include="HelloGL.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Light.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Matrix4x4.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Polygon.cpp" />
