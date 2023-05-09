@@ -104,6 +104,8 @@ HelloGL::HelloGL(int argc, char* argv[])
 		)
 	);
 
+	_sceneGraph.Objects.InsertFirst(std::make_shared<Text>("PLEASE WORK FOR GOD SAKE INSHALLAH BROTHER"));
+
 	glutWarpPointer(Screen::GetResolution().X / 2, Screen::GetResolution().Y / 2);
 	glutMainLoop();
 }
@@ -273,7 +275,12 @@ void HelloGL::UpdateObjectMatrix(const std::shared_ptr<Object>& obj)
 void HelloGL::DrawObject(const std::shared_ptr<Object>& obj)
 {
 	if (obj->Mesh == nullptr)
+	{
+		if (auto text = std::static_pointer_cast<Text>(obj))
+			DrawString(text);
+
 		return;
+	}
 
 	glBindTexture(GL_TEXTURE_2D, obj->Texture->GetID());
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -303,3 +310,13 @@ void HelloGL::DrawLight()
 
 	glLightfv(GL_LIGHT0, GL_POSITION, &_light.Position.X);
 }
+
+void HelloGL::DrawString(const std::shared_ptr<Text>& text)
+{
+	glDisable(GL_LIGHTING);
+	glRasterPos2f(0.0f, 0.0f);
+	glColor3f(text->Color.X, text->Color.Y, text->Color.Z);
+	glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (unsigned char*)text->String.c_str());
+	glEnable(GL_LIGHTING);
+}
+
