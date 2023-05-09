@@ -234,6 +234,8 @@ void HelloGL::CheckKeyboardInputs()
 
 void HelloGL::DrawFrame()
 {
+	DrawLight();
+
 	ListNode<std::shared_ptr<Object>>* node = _sceneGraph.Objects.GetNode(0);
 	while (node != nullptr)
 	{
