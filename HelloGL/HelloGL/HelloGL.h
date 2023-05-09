@@ -5,6 +5,7 @@
 
 #include "Camera.h"
 #include "InputManager.h"
+#include "Light.h"
 #include "GL/freeglut.h"
 #include "Mesh.h"
 #include "SceneGraph.h"
@@ -24,6 +25,7 @@ public:
 	void CheckKeyboardInputs();
 
 	void DrawObject(const std::shared_ptr<Object>& obj);
+	void DrawLight();
 
 	void DrawFrame();
 	void TraverseSceneGraphChildren(ListNode<std::shared_ptr<Object>>* node);
@@ -36,4 +38,6 @@ public:
 private:
 	SceneGraph _sceneGraph;
 	bool _mouseBoundToScreen = true;
+
+	Light _light;
 };

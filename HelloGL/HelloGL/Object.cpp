@@ -11,7 +11,7 @@ Object::Object(std::shared_ptr<::Mesh> mesh, const ::Transform& transform)
 	Transform = transform;
 }
 
-Object::Object(const std::string& meshPath, const std::string& texturePath, const ::Transform& transform)
+Object::Object(const std::string& meshPath, const std::string& texturePath, const ::Transform& transform, ::Material material)
 {
 	if (meshPath.find(".obj") != std::string::npos)
 	{
@@ -34,5 +34,6 @@ Object::Object(const std::string& meshPath, const std::string& texturePath, cons
 		Texture = possibleText.value();
 	}
 
+	Material = material;
 	Transform = transform;
 }
