@@ -183,11 +183,11 @@ private:
 
 			if (data.Depth == 30)
 			{
-				gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, data.ImageWidth, data.ImageHeight, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+				gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, data.ImageWidth, data.ImageHeight, GL_BGRA_EXT, GL_UNSIGNED_BYTE, textureData);
 			}
 			else if (data.Depth == 24)
 			{
-				gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, data.ImageWidth, data.ImageHeight, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+				gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, data.ImageWidth, data.ImageHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, textureData);
 			}
 		}
 		else

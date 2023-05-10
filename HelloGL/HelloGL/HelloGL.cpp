@@ -60,43 +60,7 @@ HelloGL::HelloGL(int argc, char* argv[])
 
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
-	for (unsigned i = 0; i < 1000; i++)
-	{
-		_sceneGraph.Objects.InsertFirst(std::make_shared<Object>(
-			"Models/icosphere.obj",
-			"Textures/IcosphereTexture.tga",
-			Transform(
-				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
-				Vector3(rand() % 720, rand() % 720, rand() % 720)
-			),
-			Material(
-				Vector4(0.8f, 0.05f, 0.05f, 1.0f), 
-				Vector4(0.8f, 0.05f, 0.05f, 1.0f), 
-				Vector4(1.0f, 1.0f, 1.0f, 1.0f), 
-				100.0f)
-			)
-		);
-	}
-
-	for (unsigned i = 0; i < 1000; i++)
-	{
-		_sceneGraph.Objects.InsertFirst(std::make_shared<Object>(
-			"Models/cube.obj",
-			"Textures/stars.raw",
-			Transform(
-				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
-				Vector3(rand() % 720, rand() % 720, rand() % 720)
-			),
-			Material(
-				Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-				Vector4(0.8f, 1.0f, 1.0f, 1.0f),
-				Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-				100.0f)
-			)
-		);
-	}
-
-	_light = Light(Vector3(), 
+	_light = Light(Vector3(0, 0, 0), 
 		Lighting(
 			Vector4(0.2f, 0.2f, 0.2f, 1.0f), 
 			Vector4(1.0f, 1.0f, 1.0f, 1.0f),
@@ -104,7 +68,30 @@ HelloGL::HelloGL(int argc, char* argv[])
 		)
 	);
 
-	_sceneGraph.Objects.InsertFirst(std::make_shared<Text>("PLEASE WORK FOR GOD SAKE INSHALLAH BROTHER"));
+	auto plane = _sceneGraph.Objects.InsertFirst(
+		std::make_shared<Object>(
+			"Models/plane.obj",
+			"Textures/planeTexture.tga"
+		)
+	);
+
+	auto table =  plane->Data->Children.InsertFirst(
+		std::make_shared<Object>(
+			"Models/table.obj", 
+			"Textures/tableTexture.tga"
+		)
+	);
+
+	auto mug = table->Data->Children.InsertFirst(
+		std::make_shared<Object>(
+			"Models/mug.obj",
+			"Textures/mugTexture.tga",
+			Transform(
+				Vector3(0.2f, 1.65f, 0),
+				Vector3(0, 25.0f, 0)
+			)
+		)
+	);
 
 	glutWarpPointer(Screen::GetResolution().X / 2, Screen::GetResolution().Y / 2);
 	glutMainLoop();
@@ -135,13 +122,13 @@ void HelloGL::Update()
 	if (_mouseBoundToScreen)
 	{
 		Vector2 resolution = Screen::GetResolution();
-		if (static_cast<int>(resolution.X) % 2 != 0)
+		if (resolution.X % 2 != 0)
 			resolution.X--;
-		if (static_cast<int>(resolution.Y) % 2 != 0)
+		if (resolution.Y % 2 != 0)
 			resolution.Y--;
 
-		Camera->Yaw += InputManager.GetCursorPosition().X - resolution.X / 2;
-		Camera->Pitch -= InputManager.GetCursorPosition().Y - resolution.Y / 2;
+		Camera->Yaw += InputManager.GetCursorPosition().X - resolution.X / 2.0f;
+		Camera->Pitch -= InputManager.GetCursorPosition().Y - resolution.Y / 2.0f;
 
 		if (Camera->Pitch > 89.0f)
 			Camera->Pitch = 89.0f;
@@ -167,6 +154,16 @@ void HelloGL::Update()
 	Mesh::CheckMeshExistsInGame();
 	Texture2D::CheckTextureExistsInGame();
 
+	if (_keybindCooldown)
+	{
+		_keybindCooldownTimer += FRAME_TIME;
+		if (_keybindCooldownTimer >= _keybindCooldownTime)
+		{
+			_keybindCooldown = false;
+			_keybindCooldownTimer = 0;
+		}
+	}
+
 	glutPostRedisplay();
 }
 
@@ -182,14 +179,160 @@ void HelloGL::Display()
 
 void HelloGL::CheckKeyboardInputs()
 {
-	if (InputManager.IsKeyDown(Keys::Keys::F))
+	if (InputManager.IsKeyDown(Keys::Keys::FORWARD_SLASH) && !_keybindCooldown)
+	{
+		_enableSelection = !_enableSelection;
+		_selectedObjectTree.DeleteList();
+		_selectedWidth = 0;
+
+		_keybindCooldown = true;
+	}
+	if (InputManager.IsKeyDown(Keys::Keys::SIX) && !_keybindCooldown)
+	{
+		if (_sceneGraph.Objects.GetNode(_selectedWidth + 1))
+		{
+			_selectedWidth += 1;
+			_keybindCooldown = true;
+		}
+	}
+	if (InputManager.IsKeyDown(Keys::Keys::FOUR) && !_keybindCooldown)
+	{
+		if (_sceneGraph.Objects.GetNode(_selectedWidth - 1))
+		{
+			_selectedWidth -= 1;
+			_keybindCooldown = true;
+		}
+	}
+	if (InputManager.IsKeyDown(Keys::Keys::TWO) && !_keybindCooldown)
+	{
+		std::shared_ptr<Object> parent;
+
+		if (!_selectedObjectTree.GetLastNode())
+		{
+			parent = _sceneGraph.Objects.GetNode(_selectedWidth)->Data;
+		}
+		else
+		{
+			parent = _selectedObjectTree.GetLastNode()->Data->Children.GetNode(0)->Data;
+		}
+
+		if (parent->Children.GetNode(0))
+		{
+			if (!_selectedObjectTree.GetLastNode() || _selectedObjectTree.GetLastNode()->Data != parent)
+			{
+				_selectedObjectTree.MakeNode(parent);
+				_keybindCooldown = true;
+			}
+		}
+	}
+	if (InputManager.IsKeyDown(Keys::Keys::EIGHT) && !_keybindCooldown)
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.DeleteAt(_selectedObjectTree.GetIndex(_selectedObjectTree.GetLastNode()));
+			_keybindCooldown = true;
+		}
+	}
+
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::W))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Position.Z -= 0.05f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Position.Z -= 0.05f;
+		}
+
+	}
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::S))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Position.Z += 0.05f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Position.Z += 0.05f;
+		}
+	}
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::A))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Position.X -= 0.05f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Position.X -= 0.05f;
+		}
+	}
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::D))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Position.X += 0.05f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Position.X += 0.05f;
+		}
+	}
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::Q))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Rotation.Y -= 1.0f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Rotation.Y -= 1.0f;
+		}
+	}
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::E))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Rotation.Y += 1.0f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Rotation.Y += 1.0f;
+		}
+	}
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::SPACE))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Position.Y += 0.05f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Position.Y += 0.05f;
+		}
+	}
+	if (_enableSelection && InputManager.IsSpecialKeyDown(Keys::SpecialKeys::LEFT_CONTROL))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Position.Y -= 0.05f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Position.Y -= 0.05f;
+		}
+	}
+
+	if (InputManager.IsKeyDown(Keys::Keys::HASH))
 	{
 		_sceneGraph.Objects.DeleteList();
 	}
 
-	if (InputManager.IsKeyDown(Keys::Keys::T))
+	if (InputManager.IsKeyDown(Keys::Keys::SQUARE_BRACKET_RIGHT) && !_keybindCooldown)
 	{
 		_sceneGraph.Objects.DeleteAt(0);
+		_keybindCooldown = true;
 	}
 
 	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::RIGHT_ARROW))
@@ -209,21 +352,26 @@ void HelloGL::CheckKeyboardInputs()
 		Camera->Position.Z -= 0.1f;
 		//Camera->Eye = Camera->Center; FORWARD ROTATION BASED ONLY
 	}
-	if (InputManager.IsKeyDown(Keys::Keys::SPACE))
+	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::RIGHT_SHIFT))
 	{
 		Camera->Position.Y += 0.1f;
 	}
-	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::LEFT_CONTROL))
+	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::RIGHT_CONTROL))
 	{
 		Camera->Position.Y -= 0.1f;
 	}
 
-	if (InputManager.IsKeyDown(Keys::Keys::ESCAPE))
+	if (InputManager.IsKeyDown(Keys::Keys::ESCAPE) && !_keybindCooldown)
 	{
 		_mouseBoundToScreen = !_mouseBoundToScreen;
+		_keybindCooldown = true;
 
 		if (_mouseBoundToScreen)
+		{
 			glutSetCursor(GLUT_CURSOR_NONE);
+			Vector2 resolution = Screen::GetResolution();
+			glutWarpPointer(resolution.X / 2, resolution.Y / 2);
+		}
 		if (!_mouseBoundToScreen)
 			glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
 	}

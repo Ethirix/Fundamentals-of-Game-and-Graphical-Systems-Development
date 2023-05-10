@@ -2,13 +2,6 @@
 
 Vector2::Vector2(int x, int y)
 {
-	X = static_cast<float>(x);
-	Y = static_cast<float>(y);
-}
-
-
-Vector2::Vector2(float x, float y)
-{
 	X = x;
 	Y = y;
 }
@@ -33,5 +26,5 @@ Vector2 Vector2::operator-(const Vector2& rhs)
 
 bool Vector2::operator==(const Vector2& vector2) const
 {
-	return (X >= vector2.X - 0.0005f && X <= vector2.X + 0.0005f) && (Y >= vector2.Y - 0.0005f && Y <= vector2.Y + 0.0005f);
+	return X == vector2.X && Y == vector2.Y;
 }

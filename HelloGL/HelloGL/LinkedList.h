@@ -33,6 +33,7 @@ public:
 	void DeleteAt(ListNode<T>** node, int pos);
 	ListNode<T>* GetNode(int pos);
 	ListNode<T>* GetNode(ListNode<T>* node, int pos);
+	ListNode<T>* GetLastNode();
 	ListNode<T>* Find(ListNode<T>* node, T val);
 	int GetIndex(ListNode<T>* node);
 	void PrintList(ListNode<T>* node);

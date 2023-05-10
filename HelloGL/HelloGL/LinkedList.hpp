@@ -213,6 +213,22 @@ ListNode<T>* LinkedList<T>::GetNode(ListNode<T>* node, int pos)
 }
 
 template <typename T>
+ListNode<T>* LinkedList<T>::GetLastNode()
+{
+	ListNode<T>* tempNode = GetNode(0);
+
+	while (tempNode != nullptr)
+	{
+		if (tempNode->Next == nullptr)
+			return tempNode;
+
+		tempNode = tempNode->Next;
+	}
+
+	return nullptr;
+}
+
+template <typename T>
 ListNode<T>* LinkedList<T>::Find(ListNode<T>* node, T val)
 {
 	ListNode<T>* pTemp = node->Next;
