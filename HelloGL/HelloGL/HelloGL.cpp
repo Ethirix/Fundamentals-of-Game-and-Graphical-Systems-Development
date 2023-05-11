@@ -60,43 +60,7 @@ HelloGL::HelloGL(int argc, char* argv[])
 
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
-	for (unsigned i = 0; i < 1000; i++)
-	{
-		_sceneGraph.Objects.InsertFirst(std::make_shared<Object>(
-			"Models/icosphere.obj",
-			"Textures/IcosphereTexture.tga",
-			Transform(
-				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
-				Vector3(rand() % 720, rand() % 720, rand() % 720)
-			),
-			Material(
-				Vector4(0.8f, 0.05f, 0.05f, 1.0f), 
-				Vector4(0.8f, 0.05f, 0.05f, 1.0f), 
-				Vector4(1.0f, 1.0f, 1.0f, 1.0f), 
-				100.0f)
-			)
-		);
-	}
-
-	for (unsigned i = 0; i < 1000; i++)
-	{
-		_sceneGraph.Objects.InsertFirst(std::make_shared<Object>(
-			"Models/cube.obj",
-			"Textures/stars.raw",
-			Transform(
-				Vector3(rand() % 2000 / 10.0f - 20, rand() % 800 / 10.0f - 20, rand() % 800 / 10.0f - 20),
-				Vector3(rand() % 720, rand() % 720, rand() % 720)
-			),
-			Material(
-				Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-				Vector4(0.8f, 1.0f, 1.0f, 1.0f),
-				Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-				100.0f)
-			)
-		);
-	}
-
-	_light = Light(Vector3(), 
+	_light = Light(Vector3(10.0f, 25.0f, 10.0f), 
 		Lighting(
 			Vector4(0.2f, 0.2f, 0.2f, 1.0f), 
 			Vector4(1.0f, 1.0f, 1.0f, 1.0f),
@@ -104,7 +68,62 @@ HelloGL::HelloGL(int argc, char* argv[])
 		)
 	);
 
-	_sceneGraph.Objects.InsertFirst(std::make_shared<Text>("PLEASE WORK FOR GOD SAKE INSHALLAH BROTHER"));
+	auto plane = _sceneGraph.Objects.InsertFirst(
+		std::make_shared<Object>(
+			"Models/plane.obj",
+			"Textures/planeTexture.tga",
+			Transform(),
+			Material(
+				Vector4(1,1,1,1),
+				Vector4(1,1,1,1), 
+				Vector4(0, 0, 0, 1),
+				0
+			)
+		)
+	);
+
+	auto text = plane->Data->Children.InsertFirst(
+		std::make_shared<Text>(
+			"Currently Selected Object: [NONE]",
+			Transform(
+				Vector3(3, 3, 0)
+			)
+		)
+	);
+
+	_selectedText = std::static_pointer_cast<Text>(text->Data);
+
+	auto table =  plane->Data->Children.InsertFirst(
+		std::make_shared<Object>(
+			"Models/table.obj", 
+			"Textures/tableTexture.tga",
+			Transform(),
+			Material(
+				Vector4(1,1,1,1),
+				Vector4(1,1,1,1), 
+				Vector4(1, 1, 1, 1),
+				100
+			)
+		)
+	);
+
+	auto icoSphere = plane->Data->Children.InsertFirst(
+		std::make_shared<Object>(
+			"Models/icosphere.obj",
+			"Textures/IcosphereTexture.tga"
+		)
+	);
+
+	auto mug = table->Data->Children.InsertFirst(
+		std::make_shared<Object>(
+			"Models/mug.obj",
+			"Textures/mugTexture.tga",
+			Transform(
+				Vector3(0.2f, 1.65f, 0),
+				Vector3(0, 25.0f, 0)
+			)
+		)
+	);
 
 	glutWarpPointer(Screen::GetResolution().X / 2, Screen::GetResolution().Y / 2);
 	glutMainLoop();
@@ -135,13 +154,13 @@ void HelloGL::Update()
 	if (_mouseBoundToScreen)
 	{
 		Vector2 resolution = Screen::GetResolution();
-		if (static_cast<int>(resolution.X) % 2 != 0)
+		if (resolution.X % 2 != 0)
 			resolution.X--;
-		if (static_cast<int>(resolution.Y) % 2 != 0)
+		if (resolution.Y % 2 != 0)
 			resolution.Y--;
 
-		Camera->Yaw += InputManager.GetCursorPosition().X - resolution.X / 2;
-		Camera->Pitch -= InputManager.GetCursorPosition().Y - resolution.Y / 2;
+		Camera->Yaw += InputManager.GetCursorPosition().X - resolution.X / 2.0f;
+		Camera->Pitch -= InputManager.GetCursorPosition().Y - resolution.Y / 2.0f;
 
 		if (Camera->Pitch > 89.0f)
 			Camera->Pitch = 89.0f;
@@ -167,6 +186,42 @@ void HelloGL::Update()
 	Mesh::CheckMeshExistsInGame();
 	Texture2D::CheckTextureExistsInGame();
 
+	if (_keybindCooldown)
+	{
+		_keybindCooldownTimer += FRAME_TIME;
+		if (_keybindCooldownTimer >= _keybindCooldownTime)
+		{
+			_keybindCooldown = false;
+			_keybindCooldownTimer = 0;
+		}
+	}
+
+	if (_enableSelection)
+	{
+		std::stringstream ss;
+		ss << "Currently Selected Object: ";
+		if (_selectedObjectTree.GetLastNode())
+		{
+			auto obj = _selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data;
+			ss << obj->Name << "\n";
+			ss << "Position: X: " << obj->Transform.Position.X << " Y: " << obj->Transform.Position.Y << " Z: " << obj->Transform.Position.Z << "\n";
+			ss << "Rotation: X: " << obj->Transform.Rotation.X << " Y: " << obj->Transform.Rotation.Y << " Z: " << obj->Transform.Rotation.Z << "\n";
+		}
+		else
+		{
+			auto obj = _sceneGraph.Objects.GetNode(_selectedWidth)->Data;
+			ss << obj->Name << "\n";
+			ss << "Position: X: " << obj->Transform.Position.X << " Y: " << obj->Transform.Position.Y << " Z: " << obj->Transform.Position.Z << "\n";
+			ss << "Rotation: X: " << obj->Transform.Rotation.X << " Y: " << obj->Transform.Rotation.Y << " Z: " << obj->Transform.Rotation.Z << "\n";
+		}
+
+		_selectedText->String = ss.str();
+	}
+	else
+	{
+		_selectedText->String = "Selection Disabled";
+	}
+
 	glutPostRedisplay();
 }
 
@@ -182,48 +237,233 @@ void HelloGL::Display()
 
 void HelloGL::CheckKeyboardInputs()
 {
-	if (InputManager.IsKeyDown(Keys::Keys::F))
+	if (InputManager.IsKeyDown(Keys::Keys::FORWARD_SLASH) && !_keybindCooldown)
+	{
+		_enableSelection = !_enableSelection;
+		_selectedObjectTree.DeleteList();
+		_selectedWidth = 0;
+
+		_keybindCooldown = true;
+	}
+	if (InputManager.IsKeyDown(Keys::Keys::SIX) && !_keybindCooldown)
+	{
+		if (_selectedObjectTree.GetNode(0) && _sceneGraph.Objects.GetNode(_selectedWidth + 1))
+		{
+			_selectedWidth += 1;
+			_keybindCooldown = true;
+		}
+		else if (_selectedObjectTree.GetLastNode() && _selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth + 1))
+		{
+			_selectedWidth += 1;
+			_keybindCooldown = true;
+		}
+	}
+	if (InputManager.IsKeyDown(Keys::Keys::FOUR) && !_keybindCooldown)
+	{
+		if ((_selectedObjectTree.GetNode(0) && _sceneGraph.Objects.GetNode(_selectedWidth - 1)))
+		{
+			_selectedWidth -= 1;
+			_keybindCooldown = true;
+		}
+		else if (_selectedObjectTree.GetLastNode() && _selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth - 1))
+		{
+			_selectedWidth -= 1;
+			_keybindCooldown = true;
+		}
+	}
+	if (InputManager.IsKeyDown(Keys::Keys::TWO) && !_keybindCooldown)
+	{
+		std::shared_ptr<Object> parent;
+
+		if (!_selectedObjectTree.GetLastNode())
+		{
+			parent = _sceneGraph.Objects.GetNode(_selectedWidth)->Data;
+		}
+		else
+		{
+			parent = _selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data;
+		}
+
+		if (parent->Children.GetNode(0))
+		{
+			if (!_selectedObjectTree.GetLastNode() || _selectedObjectTree.GetLastNode()->Data != parent)
+			{
+				_selectedObjectTree.MakeNode(parent);
+				_selectedWidth = 0;
+				_keybindCooldown = true;
+			}
+		}
+	}
+	if (InputManager.IsKeyDown(Keys::Keys::EIGHT) && !_keybindCooldown)
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.DeleteAt(_selectedObjectTree.GetIndex(_selectedObjectTree.GetLastNode()));
+			_selectedWidth = 0;
+			_keybindCooldown = true;
+		}
+	}
+
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::W))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Position.Z -= 0.05f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Position.Z -= 0.05f;
+		}
+
+	}
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::S))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Position.Z += 0.05f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Position.Z += 0.05f;
+		}
+	}
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::A))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Position.X -= 0.05f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Position.X -= 0.05f;
+		}
+	}
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::D))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Position.X += 0.05f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Position.X += 0.05f;
+		}
+	}
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::Q))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Rotation.Y -= 1.0f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Rotation.Y -= 1.0f;
+		}
+	}
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::E))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Rotation.Y += 1.0f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Rotation.Y += 1.0f;
+		}
+	}
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::R))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Rotation.X -= 1.0f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Rotation.X -= 1.0f;
+		}
+	}
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::F))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Rotation.X += 1.0f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Rotation.X += 1.0f;
+		}
+	}
+	if (_enableSelection && InputManager.IsKeyDown(Keys::Keys::SPACE))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Position.Y += 0.05f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Position.Y += 0.05f;
+		}
+	}
+	if (_enableSelection && InputManager.IsSpecialKeyDown(Keys::SpecialKeys::LEFT_CONTROL))
+	{
+		if (_selectedObjectTree.GetLastNode())
+		{
+			_selectedObjectTree.GetLastNode()->Data->Children.GetNode(_selectedWidth)->Data->Transform.Position.Y -= 0.05f;
+		}
+		else
+		{
+			_sceneGraph.Objects.GetNode(_selectedWidth)->Data->Transform.Position.Y -= 0.05f;
+		}
+	}
+
+	if (InputManager.IsKeyDown(Keys::Keys::HASH))
 	{
 		_sceneGraph.Objects.DeleteList();
 	}
 
-	if (InputManager.IsKeyDown(Keys::Keys::T))
+	if (InputManager.IsKeyDown(Keys::Keys::SQUARE_BRACKET_RIGHT) && !_keybindCooldown)
 	{
 		_sceneGraph.Objects.DeleteAt(0);
+		_keybindCooldown = true;
 	}
 
-	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::RIGHT_ARROW))
+	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::RIGHT_ARROW) && _mouseBoundToScreen)
 	{
 		Camera->Position.X += 0.1f;
 	}
-	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::LEFT_ARROW))
+	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::LEFT_ARROW) && _mouseBoundToScreen)
 	{
 		Camera->Position.X -= 0.1f;
 	}
-	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::DOWN_ARROW))
+	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::DOWN_ARROW) && _mouseBoundToScreen)
 	{
 		Camera->Position.Z += 0.1f;
 	}
-	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::UP_ARROW))
+	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::UP_ARROW) && _mouseBoundToScreen)
 	{
 		Camera->Position.Z -= 0.1f;
 		//Camera->Eye = Camera->Center; FORWARD ROTATION BASED ONLY
 	}
-	if (InputManager.IsKeyDown(Keys::Keys::SPACE))
+	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::RIGHT_SHIFT) && _mouseBoundToScreen)
 	{
 		Camera->Position.Y += 0.1f;
 	}
-	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::LEFT_CONTROL))
+	if (InputManager.IsSpecialKeyDown(Keys::SpecialKeys::RIGHT_CONTROL) && _mouseBoundToScreen)
 	{
 		Camera->Position.Y -= 0.1f;
 	}
 
-	if (InputManager.IsKeyDown(Keys::Keys::ESCAPE))
+	if (InputManager.IsKeyDown(Keys::Keys::ESCAPE) && !_keybindCooldown)
 	{
 		_mouseBoundToScreen = !_mouseBoundToScreen;
+		_keybindCooldown = true;
 
 		if (_mouseBoundToScreen)
+		{
 			glutSetCursor(GLUT_CURSOR_NONE);
+			Vector2 resolution = Screen::GetResolution();
+			glutWarpPointer(resolution.X / 2, resolution.Y / 2);
+		}
 		if (!_mouseBoundToScreen)
 			glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
 	}
@@ -283,7 +523,29 @@ void HelloGL::DrawObject(const std::shared_ptr<Object>& obj)
 	}
 
 	glBindTexture(GL_TEXTURE_2D, obj->Texture->GetID());
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glBegin(GL_TRIANGLES);
+	for (int i = 0; i < obj->Mesh->VertexIndices.IndexLength; i++)
+	{
+		glNormal3f(obj->Mesh->IndexedNormals.Index[obj->Mesh->NormalIndices.Index[i]].X,
+		           obj->Mesh->IndexedNormals.Index[obj->Mesh->NormalIndices.Index[i]].Y,
+		           obj->Mesh->IndexedNormals.Index[obj->Mesh->NormalIndices.Index[i]].Z);
+
+		glTexCoord2f(obj->Mesh->TextureCoordinates.Index[obj->Mesh->TexCoordIndices.Index[i]].U,
+		             obj->Mesh->TextureCoordinates.Index[obj->Mesh->TexCoordIndices.Index[i]].V);
+
+		glMaterialfv(GL_FRONT, GL_AMBIENT, &obj->Material.Ambient.X);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, &obj->Material.Diffuse.X);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, &obj->Material.Specular.X);
+		glMaterialf(GL_FRONT, GL_SHININESS, obj->Material.Shininess);
+
+		glVertex3f(obj->Mesh->IndexedVertices.Index[obj->Mesh->VertexIndices.Index[i]].X,
+		           obj->Mesh->IndexedVertices.Index[obj->Mesh->VertexIndices.Index[i]].Y,
+		           obj->Mesh->IndexedVertices.Index[obj->Mesh->VertexIndices.Index[i]].Z);
+	}
+	glEnd();
+
+	/*glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
 
@@ -291,15 +553,11 @@ void HelloGL::DrawObject(const std::shared_ptr<Object>& obj)
 	glTexCoordPointer(2, GL_FLOAT, 0, obj->Mesh->TextureCoordinates.Index);
 	glVertexPointer(3, GL_FLOAT, 0, obj->Mesh->IndexedVertices.Index);
 
-	glMaterialfv(GL_FRONT, GL_AMBIENT, &obj->Material.Ambient.X);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, &obj->Material.Diffuse.X);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, &obj->Material.Specular.X);
-	glMaterialf(GL_FRONT, GL_SHININESS, obj->Material.Shininess);
-	glDrawElements(GL_TRIANGLES, obj->Mesh->Indices.IndexLength, GL_UNSIGNED_SHORT, obj->Mesh->Indices.Index);
+	glDrawElements(GL_TRIANGLES, obj->Mesh->VertexIndices.IndexLength, GL_UNSIGNED_SHORT, obj->Mesh->VertexIndices.Index);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);*/
 }
 
 void HelloGL::DrawLight()
@@ -319,4 +577,3 @@ void HelloGL::DrawString(const std::shared_ptr<Text>& text)
 	glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (unsigned char*)text->String.c_str());
 	glEnable(GL_LIGHTING);
 }
-

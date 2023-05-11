@@ -41,5 +41,14 @@ private:
 	SceneGraph _sceneGraph;
 	bool _mouseBoundToScreen = true;
 
+	bool _enableSelection = false;
+	LinkedList<std::shared_ptr<Object>> _selectedObjectTree;
+	std::shared_ptr<Text> _selectedText;
+	int _selectedWidth = 0;
+
+	bool _keybindCooldown = false;
+	int _keybindCooldownTime = 250;
+	int _keybindCooldownTimer = 0;
+
 	Light _light;
 };

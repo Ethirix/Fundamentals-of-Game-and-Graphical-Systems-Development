@@ -42,6 +42,26 @@ Vector3 Vector3::operator*(const float rhs)
 	return v3;
 }
 
+Vector3 Vector3::operator+=(const Vector3& rhs)
+{
+	Vector3 v3;
+	v3.X = X + rhs.X;
+	v3.Y = Y + rhs.Y;
+	v3.Z = Z + rhs.Z;
+
+	return v3;
+}
+
+Vector3 Vector3::operator-=(const Vector3& rhs)
+{
+	Vector3 v3;
+	v3.X = X - rhs.X;
+	v3.Y = Y - rhs.Y;
+	v3.Z = Z - rhs.Z;
+
+	return v3;
+}
+
 float Vector3::Magnitude()
 {
 	return abs(sqrt(X * X + Y * Y + Z * Z));
