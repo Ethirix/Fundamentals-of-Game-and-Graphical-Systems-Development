@@ -43,6 +43,7 @@ private:
 
 	bool _enableSelection = false;
 	LinkedList<std::shared_ptr<Object>> _selectedObjectTree;
+	std::shared_ptr<Text> _selectedText;
 	int _selectedWidth = 0;
 
 	bool _keybindCooldown = false;

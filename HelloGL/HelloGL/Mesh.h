@@ -25,7 +25,9 @@ public:
 	MeshData<Vector3> IndexedNormals{};
  	MeshData<Vector3> IndexedColors{};
 	MeshData<TextCoords> TextureCoordinates{};
-	MeshData<unsigned short> Indices{};
+	MeshData<unsigned short> VertexIndices{};
+	MeshData<unsigned short> NormalIndices{};
+	MeshData<unsigned short> TexCoordIndices{};
 
 	static OPTIONAL_MESH LoadFromTXT(const std::string& path)
 	{
@@ -88,12 +90,12 @@ public:
 			mesh->TextureCoordinates.Index[i] = coords;
 		}
 
-		file >> mesh->Indices.IndexLength;
-		mesh->Indices.Index = new unsigned short[mesh->Indices.IndexLength];
-		for (unsigned i = 0; i < mesh->Indices.IndexLength; i++)
+		file >> mesh->VertexIndices.IndexLength;
+		mesh->VertexIndices.Index = new unsigned short[mesh->VertexIndices.IndexLength];
+		for (unsigned i = 0; i < mesh->VertexIndices.IndexLength; i++)
 		{
 			file >> line;
-			mesh->Indices.Index[i] = std::stoi(line);
+			mesh->VertexIndices.Index[i] = std::stoi(line);
 		}
 
 		file.close();
@@ -124,7 +126,9 @@ public:
 		}
 
 		std::vector<Vector3> vertices, vertexNormals;
-		std::vector<unsigned short> faceElements;
+		std::vector<unsigned short> vertexIndices;
+		std::vector<unsigned short> normalIndices;
+		std::vector<unsigned short> texCoordIndices;
 		std::vector<TextCoords> textCoords;
 
 		while (std::getline(file, line))
@@ -186,7 +190,9 @@ public:
 					while (ss >> temp)
 						data.emplace_back(temp - 1);
 
-					faceElements.emplace_back(data[0]);
+					vertexIndices.emplace_back(data[0]);
+					texCoordIndices.emplace_back(data[1]);
+					normalIndices.emplace_back(data[2]);
 					data.clear();
 				}
 			}
@@ -213,11 +219,25 @@ public:
 			meshData.Mesh->IndexedNormals.Index[i] = vertexNormals[i];
 		}
 
-		meshData.Mesh->Indices.Index = new unsigned short[faceElements.size()];
-		meshData.Mesh->Indices.IndexLength = faceElements.size();
-		for (unsigned i = 0; i < faceElements.size(); i++)
+		meshData.Mesh->VertexIndices.Index = new unsigned short[vertexIndices.size()];
+		meshData.Mesh->VertexIndices.IndexLength = vertexIndices.size();
+		for (unsigned i = 0; i < vertexIndices.size(); i++)
 		{
-			meshData.Mesh->Indices.Index[i] = faceElements[i];
+			meshData.Mesh->VertexIndices.Index[i] = vertexIndices[i];
+		}
+
+		meshData.Mesh->NormalIndices.Index = new unsigned short[normalIndices.size()];
+		meshData.Mesh->NormalIndices.IndexLength = normalIndices.size();
+		for (unsigned i = 0; i < normalIndices.size(); i++)
+		{
+			meshData.Mesh->NormalIndices.Index[i] = normalIndices[i];
+		}
+
+		meshData.Mesh->TexCoordIndices.Index = new unsigned short[texCoordIndices.size()];
+		meshData.Mesh->TexCoordIndices.IndexLength = texCoordIndices.size();
+		for (unsigned i = 0; i < texCoordIndices.size(); i++)
+		{
+			meshData.Mesh->TexCoordIndices.Index[i] = texCoordIndices[i];
 		}
 
 		_loadedObjects.MakeNode(std::pair(path, meshData));

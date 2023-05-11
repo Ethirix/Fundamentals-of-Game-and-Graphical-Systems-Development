@@ -7,4 +7,5 @@ Text::Text(const std::string& str, const ::Transform& transform, const Vector3& 
 	Mesh = nullptr;
 	Texture = nullptr;
 	Color = color;
+	Name = "Text";
 }
